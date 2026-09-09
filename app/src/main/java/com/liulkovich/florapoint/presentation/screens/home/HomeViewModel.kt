@@ -49,9 +49,11 @@ class HomeViewModel @Inject constructor(
                         item.isReferenceOnly != 1 &&
                         (category == null || item.category == category) &&
                         isInSeason(item, currentMonth)
-            }.sortedBy { item ->
-                daysUntilSeasonEnd(item.endMonth, currentMonth)
-            }
+            }.sortedWith(
+                compareBy<Reference> {
+                    monthsUntilSeasonEnd(it.endMonth, currentMonth)
+                }.thenBy { it.id }
+            )
         }
             .onEach { filtered ->
                 _state.update { it.copy(species = filtered, isLoading = false) }
@@ -98,15 +100,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun daysUntilSeasonEnd(endMonth: Int, currentMonth: Int): Int {
+    private fun monthsUntilSeasonEnd(endMonth: Int, currentMonth: Int): Int {
         val end = endMonth.coerceIn(1, 12)
         val current = currentMonth.coerceIn(1, 12)
 
-        return if (end >= current) {
-            (end - current) * 31
-        } else {
-            (12 - current + end) * 31
-        }
+        return (end - current + 12) % 12
     }
 }
 
