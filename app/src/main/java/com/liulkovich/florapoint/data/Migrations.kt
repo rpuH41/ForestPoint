@@ -5,12 +5,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 val MIGRATION_17_18 = object : Migration(17, 18) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // 1. New columns: reference-only flag + look-alike differences text
         db.execSQL("ALTER TABLE reference_table ADD COLUMN is_reference_only INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE reference_table ADD COLUMN differences_ru TEXT")
         db.execSQL("ALTER TABLE reference_table ADD COLUMN differences_en TEXT")
-
-        // 2. Reciprocal "differences" text for existing species that already had a look-alike
         db.execSQL(
             """
             UPDATE reference_table SET differences_ru = 'У белого гриба сеточка на ножке светлая, почти белая, а не тёмная, трубчатый слой белый или слегка желтоватый и не розовеет с возрастом, а мякоть на срезе не меняет цвет и не горчит.', differences_en = 'The porcini''s stem has a pale, almost white net pattern rather than a dark one, the pore layer is white or pale yellow and doesn''t turn pink with age, and the cut flesh keeps its color and doesn''t taste bitter.' WHERE id = 1
@@ -87,7 +84,6 @@ val MIGRATION_17_18 = object : Migration(17, 18) {
             """.trimIndent()
         )
 
-        // 3. New reference-only look-alike species (ids 71-79)
         db.execSQL(
             """
             INSERT INTO reference_table (id, category, name_ru, name_en, habitat_ru, habitat_en, look_alikes_ru, look_alikes_en, description_ru, description_en, start_month, end_month, image_name, is_notif_enabled, is_reference_only, differences_ru, differences_en) VALUES (71, 'mushroom', 'Желчный гриб', 'Bitter bolete', 'Растёт в хвойных и лиственных лесах, часто у оснований деревьев и на трухлявой древесине, встречается с июня по октябрь.', 'Grows in coniferous and deciduous forests, often near tree bases and on decaying wood, from June to October.', 'Белый гриб, Польский гриб', 'Porcini, Bay bolete', 'Несъедобный трубчатый гриб, внешне очень похожий на белый гриб. Мякоть невыносимо горькая, и горечь не пропадает при варке или жарке — испортит любое блюдо, даже если гриб случайно попадёт в корзину в небольшом количестве.', 'An inedible bolete that closely resembles porcini. The flesh is unbearably bitter, and the bitterness doesn''t go away with cooking — even a small amount can ruin an entire dish.', 6, 10, 'tylopilus_felleus', 0, 1, 'На ножке у желчного гриба тёмная сетчатая сеточка вместо светлых чешуек, трубчатый слой розовеет с возрастом и темнеет от нажатия, а мякоть на срезе тоже розовеет — у белого гриба этого не происходит.', 'The stem has a dark net-like pattern instead of light scales, the pore surface turns pink with age and darkens when pressed, and the cut flesh also turns pink — none of this happens in porcini.')
@@ -145,6 +141,94 @@ val MIGRATION_18_19 = object : Migration(18, 19) {
             SET look_alikes_ru = 'Шампиньон лесной, Сыроежка зелёная',
                 look_alikes_en = 'Wood mushroom, Green russula'
             WHERE id = 26
+            """.trimIndent()
+        )
+    }
+}
+val MIGRATION_19_20 = object : Migration(19, 20) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        db.execSQL(
+            """
+            INSERT INTO reference_table (
+                id,
+                category,
+                name_ru,
+                name_en,
+                habitat_ru,
+                habitat_en,
+                look_alikes_ru,
+                look_alikes_en,
+                description_ru,
+                description_en,
+                start_month,
+                end_month,
+                image_name,
+                is_notif_enabled,
+                is_reference_only,
+                differences_ru,
+                differences_en
+            ) VALUES (
+                80,
+                'nut',
+                'Жёлуди',
+                'Acorns',
+                'Дубовые леса, редколесья, лесные опушки и парки с дубами',
+                'Oak forests, woodlands, forest edges, and parks with oak trees',
+                'Нет',
+                'None',
+                'Плоды дуба, созревающие осенью. Жёлуди имеют характерную овальную или продолговатую форму и покрыты твёрдой оболочкой. Обычно они созревают с конца лета до осени и падают на землю по мере созревания. Размер, форма и цвет желудей могут различаться в зависимости от вида дуба. Жёлуди часто встречаются под дубами, в лесах, редколесьях, на опушках и в парках.',
+                'The fruits of oak trees, typically maturing in fall. Acorns have a characteristic oval or elongated shape and are covered by a hard shell. They usually mature from late summer into fall and fall to the ground as they ripen. The size, shape, and color of acorns can vary depending on the oak species. Acorns are commonly found beneath oak trees in forests, woodlands, forest edges, and parks.',
+                9,
+                11,
+                'quercus_acorns',
+                0,
+                0,
+                NULL,
+                NULL
+            )
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO reference_table (
+                id,
+                category,
+                name_ru,
+                name_en,
+                habitat_ru,
+                habitat_en,
+                look_alikes_ru,
+                look_alikes_en,
+                description_ru,
+                description_en,
+                start_month,
+                end_month,
+                image_name,
+                is_notif_enabled,
+                is_reference_only,
+                differences_ru,
+                differences_en
+            ) VALUES (
+                81,
+                'berry',
+                'Азимина',
+                'Pawpaw (Asimina triloba)',
+                'Влажные лиственные леса, поймы рек, лесные овраги и лесные опушки',
+                'Moist deciduous forests, river floodplains, wooded ravines, and forest edges',
+                'Нет',
+                'None',
+                'Крупный плод азимины трёхлопастной, созревающий в конце лета и начале осени.',
+                'A large fruit of the common pawpaw tree, typically ripening in late summer and early fall.',
+                8,
+                10,
+                'asimina_triloba',
+                0,
+                0,
+                NULL,
+                NULL
+            )
             """.trimIndent()
         )
     }
