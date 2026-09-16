@@ -46,6 +46,14 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import android.graphics.Bitmap
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import androidx.core.graphics.toColorInt
+import android.graphics.Path
 
 @SuppressLint("LocalContextResourcesRead")
 @Composable
@@ -57,10 +65,11 @@ fun OsmMapView(
     shouldFollowLocation: Boolean = true,
     forceCenter: GeoPoint? = null,
     selectedPointId: Int? = null,
+    selectedMapLocation: GeoPoint? = null,
     onMapReady: (MapView, MyLocationNewOverlay) -> Unit,
     onMarkerClick: (UserPoints) -> Unit,
     currentWeather: CurrentWeather? = null,
-    onMarkerLongClick: (UserPoints) -> Unit,
+    onMapClick: (GeoPoint) -> Unit
 ) {
     val context = LocalContext.current
     val pointTitleTemplate = stringResource(R.string.point_id)
@@ -151,13 +160,44 @@ fun OsmMapView(
 
                     mv.overlays.add(marker)
                 }
+                selectedMapLocation?.let { location ->
 
-                mv.overlays.add(MapEventsOverlay(object : MapEventsReceiver {
-                    override fun singleTapConfirmedHelper(p: GeoPoint?) = false
-                    override fun longPressHelper(p: GeoPoint?): Boolean {
-                        return false
+                    val selectionMarker = Marker(mv).apply {
+                        position = location
+                        setAnchor(
+                            Marker.ANCHOR_CENTER,
+                            Marker.ANCHOR_BOTTOM
+                        )
+
+                        icon = createSelectionMarkerBitmap(context)
                     }
-                }))
+
+                    mv.overlays.add(selectionMarker)
+                }
+
+                mv.overlays.add(
+                    MapEventsOverlay(
+                        object : MapEventsReceiver {
+
+                            override fun singleTapConfirmedHelper(
+                                p: GeoPoint?
+                            ): Boolean {
+                                if (p != null) {
+                                    onMapClick(p)
+                                    return true
+                                }
+
+                                return false
+                            }
+
+                            override fun longPressHelper(
+                                p: GeoPoint?
+                            ): Boolean {
+                                return false
+                            }
+                        }
+                    )
+                )
 
                 mv.invalidate()
             }
@@ -251,4 +291,76 @@ fun OsmMapView(
             }
         }
     }
+}
+private fun createSelectionMarkerBitmap(
+    context: Context
+): Drawable {
+    val density = context.resources.displayMetrics.density
+
+    // Компактный размер маркера
+    val width = (32f * density).toInt()
+    val height = (40f * density).toInt()
+
+    val bitmap = Bitmap.createBitmap(
+        width,
+        height,
+        Bitmap.Config.ARGB_8888
+    )
+
+    val canvas = Canvas(bitmap)
+
+    val stickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.DKGRAY
+        style = Paint.Style.STROKE
+        strokeWidth = 2f * density
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    val centerX = width / 2f
+
+    canvas.drawLine(
+        centerX,
+        6f * density,
+        centerX,
+        36f * density,
+        stickPaint
+    )
+
+    val flagPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = "#2E7D32".toColorInt()
+        style = Paint.Style.FILL
+    }
+
+    val flagLeft = centerX
+    val flagTop = 6f * density
+    val flagRight = centerX + 15f * density
+    val flagBottom = 16f * density
+
+    canvas.drawRect(
+        flagLeft,
+        flagTop,
+        flagRight,
+        flagBottom,
+        flagPaint
+    )
+
+    // Белая тонкая обводка флага
+    val flagStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.WHITE
+        style = Paint.Style.STROKE
+        strokeWidth = 1.2f * density
+    }
+
+    canvas.drawRect(
+        flagLeft,
+        flagTop,
+        flagRight,
+        flagBottom,
+        flagStroke
+    )
+
+    return BitmapDrawable(
+        context.resources,
+        bitmap
+    )
 }

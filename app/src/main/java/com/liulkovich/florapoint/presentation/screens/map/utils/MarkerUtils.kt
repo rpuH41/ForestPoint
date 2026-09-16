@@ -75,31 +75,69 @@ fun createShapeMarkerBitmap(category: String): Bitmap {
                     style = Paint.Style.STROKE
                     strokeCap = Paint.Cap.ROUND
                 }
-                canvas.drawLine(cx, 79f, cx, 44f, stemPaint)
+
+                // Палочка
+                canvas.drawLine(
+                    cx,
+                    79f,
+                    cx,
+                    40f,
+                    stemPaint
+                )
 
                 fill.color = "#34C05A".toColorInt()
 
                 val leaf1 = Path().apply {
-                    moveTo(cx - 2f, 52f)
-                    cubicTo(cx - 19f, 37f, cx - 26f, 29f, cx - 10f, 31f)
-                    cubicTo(cx - 8f, 44f, cx - 5f, 49f, cx - 2f, 52f)
+                    moveTo(cx - 1f, 55f)
+                    cubicTo(
+                        cx - 19f, 42f,
+                        cx - 26f, 31f,
+                        cx - 10f, 32f
+                    )
+                    cubicTo(
+                        cx - 7f, 43f,
+                        cx - 4f, 51f,
+                        cx - 1f, 55f
+                    )
+                    close()
                 }
+
                 canvas.drawPath(leaf1, fill)
                 canvas.drawPath(leaf1, stroke)
 
                 val leaf2 = Path().apply {
-                    moveTo(cx + 2f, 50f)
-                    cubicTo(cx + 19f, 36f, cx + 25f, 28f, cx + 11f, 30f)
-                    cubicTo(cx + 9f, 43f, cx + 6f, 47f, cx + 2f, 50f)
+                    moveTo(cx + 1f, 55f)
+                    cubicTo(
+                        cx + 19f, 42f,
+                        cx + 26f, 31f,
+                        cx + 10f, 32f
+                    )
+                    cubicTo(
+                        cx + 7f, 43f,
+                        cx + 4f, 51f,
+                        cx + 1f, 55f
+                    )
+                    close()
                 }
+
                 canvas.drawPath(leaf2, fill)
                 canvas.drawPath(leaf2, stroke)
 
                 val leaf3 = Path().apply {
-                    moveTo(cx, 43f)
-                    cubicTo(cx - 9f, 33f, cx - 12f, 28f, cx - 3f, 29f)
-                    cubicTo(cx + 3f, 35f, cx + 4f, 39f, cx, 43f)
+                    moveTo(cx, 42f)
+                    cubicTo(
+                        cx - 10f, 34f,
+                        cx - 12f, 25f,
+                        cx - 2f, 27f
+                    )
+                    cubicTo(
+                        cx + 5f, 30f,
+                        cx + 5f, 37f,
+                        cx, 42f
+                    )
+                    close()
                 }
+
                 canvas.drawPath(leaf3, fill)
                 canvas.drawPath(leaf3, stroke)
             }

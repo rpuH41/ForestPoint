@@ -104,6 +104,9 @@ fun MapScreen(
     val context = LocalContext.current
     var shouldFollowLocation by remember { mutableStateOf(true) }
     var forceCenter by remember { mutableStateOf<GeoPoint?>(null) }
+
+    var selectedMapLocation by remember { mutableStateOf<GeoPoint?>(null) }
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val configuration = LocalConfiguration.current
@@ -122,10 +125,25 @@ fun MapScreen(
 
     LaunchedEffect(deepLinkLat, deepLinkLon) {
         if (deepLinkLat != null && deepLinkLon != null && deepLinkLat != 0.0) {
+
+            val point = GeoPoint(deepLinkLat, deepLinkLon)
+
+            selectedMapLocation = point
+
             shouldFollowLocation = false
-            forceCenter = GeoPoint(deepLinkLat, deepLinkLon)
-            viewModel.onAddNewPointClicked(deepLinkLat, deepLinkLon)
-            deepLinkName?.let { viewModel.setDeepLinkData(it, deepLinkCategory ?: "custom") }
+            forceCenter = point
+
+            viewModel.onAddNewPointClicked(
+                deepLinkLat,
+                deepLinkLon
+            )
+
+            deepLinkName?.let {
+                viewModel.setDeepLinkData(
+                    it,
+                    deepLinkCategory ?: "custom"
+                )
+            }
         }
     }
 
@@ -172,7 +190,6 @@ fun MapScreen(
                         .weight(2f)
                         .fillMaxHeight()
                         .padding(16.dp),
-                       // .clip(RoundedCornerShape(16.dp)),
                     state = state,
                     mapPoints = mapPoints,
                     viewModel = viewModel,
@@ -180,13 +197,20 @@ fun MapScreen(
                     myLocationOverlayRef = myLocationOverlayRef,
                     shouldFollowLocation = shouldFollowLocation,
                     forceCenter = forceCenter,
-                    onShouldFollowLocationChange = { shouldFollowLocation = it },
-                    onForceCenterChange = { forceCenter = it },
+                    onShouldFollowLocationChange = {
+                        shouldFollowLocation = it
+                    },
+                    onForceCenterChange = {
+                        forceCenter = it
+                    },
+                    onSelectedMapLocationChange = {
+                        selectedMapLocation = it
+                    },
                     focusManager = focusManager,
                     keyboardController = keyboardController,
+                    selectedMapLocation = selectedMapLocation,
                     isLandscape = true
                 )
-
                 VerticalDivider(
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant
@@ -210,9 +234,8 @@ fun MapScreen(
                 MapContent(
                     modifier = Modifier
                         .weight(2f)
-                        .fillMaxWidth()
+                        .fillMaxHeight()
                         .padding(16.dp),
-                       // .clip(RoundedCornerShape(16.dp)),
                     state = state,
                     mapPoints = mapPoints,
                     viewModel = viewModel,
@@ -220,10 +243,19 @@ fun MapScreen(
                     myLocationOverlayRef = myLocationOverlayRef,
                     shouldFollowLocation = shouldFollowLocation,
                     forceCenter = forceCenter,
-                    onShouldFollowLocationChange = { shouldFollowLocation = it },
-                    onForceCenterChange = { forceCenter = it },
+                    onShouldFollowLocationChange = {
+                        shouldFollowLocation = it
+                    },
+                    onForceCenterChange = {
+                        forceCenter = it
+                    },
+                    onSelectedMapLocationChange = {
+                        selectedMapLocation = it
+                    },
                     focusManager = focusManager,
-                    keyboardController = keyboardController
+                    keyboardController = keyboardController,
+                    selectedMapLocation = selectedMapLocation,
+                    isLandscape = false
                 )
 
                 HorizontalDivider(
@@ -249,7 +281,13 @@ fun MapScreen(
         state.bottomSheetMode?.let { mode ->
             val currentLocale = configuration.locales[0]
             ModalBottomSheet(
-                onDismissRequest = { viewModel.dismissBottomSheet() },
+                onDismissRequest = {
+                    if (mode is BottomSheetMode.Add) {
+                        selectedMapLocation = null
+                    }
+
+                    viewModel.dismissBottomSheet()
+                },
                 sheetState = sheetState,
                 dragHandle = { BottomSheetDefaults.DragHandle() }
             ) {
@@ -258,7 +296,9 @@ fun MapScreen(
                         species = state.species,
                         initialName = state.deepLinkName,
                         initialCategory = state.deepLinkCategory,
+
                         onSave = { speciesId: Int?, userName, description, category, isPublic ->
+
                             viewModel.addNewPoint(
                                 mode.latitude,
                                 mode.longitude,
@@ -268,9 +308,16 @@ fun MapScreen(
                                 category,
                                 isPublic
                             )
+
+                            selectedMapLocation = null
                             viewModel.dismissBottomSheet()
                         },
-                        onDismiss = { viewModel.dismissBottomSheet() },
+
+                        onDismiss = {
+                            selectedMapLocation = null
+                            viewModel.dismissBottomSheet()
+                        },
+
                         isAuthorized = viewModel.isAuthorized(),
                         onOpenSettings = { onOpenSettings() }
                     )
@@ -400,7 +447,9 @@ private fun MapContent(
     onForceCenterChange: (GeoPoint?) -> Unit,
     focusManager: FocusManager,
     keyboardController: SoftwareKeyboardController?,
-    isLandscape: Boolean = false  // ← новый параметр
+    onSelectedMapLocationChange: (GeoPoint?) -> Unit,
+    selectedMapLocation: GeoPoint?,
+    isLandscape: Boolean = false
 ) {
     val fabSize = if (isLandscape) 40.dp else 56.dp
     val fabIconSize = if (isLandscape) 18.dp else 24.dp
@@ -421,6 +470,7 @@ private fun MapContent(
             currentLocation = state.currentUserLocation,
             shouldFollowLocation = shouldFollowLocation,
             forceCenter = forceCenter,
+            selectedMapLocation = selectedMapLocation,
             currentWeather = state.currentWeather,
             onMapReady = { mapView, locationOverlay ->
                 mapView.setBuiltInZoomControls(false)
@@ -440,7 +490,23 @@ private fun MapContent(
                 onShouldFollowLocationChange(false)
                 onForceCenterChange(GeoPoint(point.latitude, point.longitude))
             },
-            onMarkerLongClick = { point -> viewModel.onPointLongClicked(point) }
+            onMapClick = { geoPoint ->
+
+                focusManager.clearFocus()
+                keyboardController?.hide()
+
+                onSelectedMapLocationChange(geoPoint)
+
+                onShouldFollowLocationChange(false)
+
+                onForceCenterChange(geoPoint)
+
+                viewModel.onAddNewPointClicked(
+                    geoPoint.latitude,
+                    geoPoint.longitude
+                )
+            },
+
         )
 
         Column(
@@ -452,14 +518,20 @@ private fun MapContent(
         ) {
             FloatingActionButton(
                 onClick = {
+
+                    onSelectedMapLocationChange(null)
+
                     onShouldFollowLocationChange(true)
                     onForceCenterChange(null)
+
                     val overlay = myLocationOverlayRef.value
                     val myLoc = overlay?.myLocation
+
                     if (myLoc != null) {
                         mapViewRef.value?.controller?.animateTo(myLoc)
                     } else {
                         val loc = state.currentUserLocation
+
                         if (loc != null) {
                             mapViewRef.value?.controller?.animateTo(
                                 GeoPoint(loc.first, loc.second)
@@ -500,18 +572,45 @@ private fun MapContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                        onClick = {
-                            val overlay = myLocationOverlayRef.value
-                            val myLoc = overlay?.myLocation
-                            if (myLoc != null) {
-                                viewModel.onAddNewPointClicked(myLoc.latitude, myLoc.longitude)
-                            } else {
-                                val loc = state.currentUserLocation
-                                if (loc != null) {
-                                    viewModel.onAddNewPointClicked(loc.first, loc.second)
+                            onClick = {
+                                val overlay = myLocationOverlayRef.value
+                                val myLoc = overlay?.myLocation
+
+                                if (myLoc != null) {
+                                    val point = GeoPoint(
+                                        myLoc.latitude,
+                                        myLoc.longitude
+                                    )
+
+                                    onSelectedMapLocationChange(point)
+                                    onShouldFollowLocationChange(false)
+                                    onForceCenterChange(point)
+
+                                    viewModel.onAddNewPointClicked(
+                                        myLoc.latitude,
+                                        myLoc.longitude
+                                    )
+
+                                } else {
+                                    val loc = state.currentUserLocation
+
+                                    if (loc != null) {
+                                        val point = GeoPoint(
+                                            loc.first,
+                                            loc.second
+                                        )
+
+                                        onSelectedMapLocationChange(point)
+                                        onShouldFollowLocationChange(false)
+                                        onForceCenterChange(point)
+
+                                        viewModel.onAddNewPointClicked(
+                                            loc.first,
+                                            loc.second
+                                        )
+                                    }
                                 }
-                            }
-                        },
+                            },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF1B5E20),
                             contentColor = Color.White
