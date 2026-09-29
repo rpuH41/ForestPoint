@@ -72,6 +72,9 @@ import com.liulkovich.florapoint.presentation.screens.guide.numberInString
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -191,18 +194,22 @@ fun DetailScreen(
 }
 @SuppressLint("LocalContextResourcesRead")
 @Composable
-fun HeroImage(imageName: String, name: String) {
+fun HeroImage(
+    imageName: String,
+    name: String
+) {
     val context = LocalContext.current
 
-    val imageId = remember(imageName) {
-        context.resources.getIdentifier(imageName, "drawable", context.packageName)
+    val images = remember(imageName) {
+        imageName
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
     }
 
-    val painter = if (imageId != 0) {
-        painterResource(imageId)
-    } else {
-        painterResource(R.drawable.ic_launcher_background)
-    }
+    val pagerState = rememberPagerState(
+        pageCount = { images.size }
+    )
 
     Box(
         modifier = Modifier
@@ -215,12 +222,35 @@ fun HeroImage(imageName: String, name: String) {
                 .fillMaxSize()
                 .clip(RoundedCornerShape(16.dp))
         ) {
-            Image(
-                painter = painter,
-                contentDescription = stringResource(R.string.images_of_mushrooms_berries_plants_and_nuts),
-                contentScale = ContentScale.Crop,
+
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier.fillMaxSize()
-            )
+            ) { page ->
+
+                val imageId = remember(images[page]) {
+                    context.resources.getIdentifier(
+                        images[page],
+                        "drawable",
+                        context.packageName
+                    )
+                }
+
+                val painter = if (imageId != 0) {
+                    painterResource(imageId)
+                } else {
+                    painterResource(R.drawable.ic_launcher_background)
+                }
+
+                Image(
+                    painter = painter,
+                    contentDescription = stringResource(
+                        R.string.images_of_mushrooms_berries_plants_and_nuts
+                    ),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             Box(
                 modifier = Modifier
@@ -248,6 +278,30 @@ fun HeroImage(imageName: String, name: String) {
                         bottom = 16.dp
                     )
             )
+
+            if (images.size > 1) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    repeat(images.size) { index ->
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (pagerState.currentPage == index) {
+                                        Color.White
+                                    } else {
+                                        Color.White.copy(alpha = 0.4f)
+                                    }
+                                )
+                        )
+                    }
+                }
+            }
         }
     }
 }

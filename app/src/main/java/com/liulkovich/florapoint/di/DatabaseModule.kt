@@ -6,6 +6,8 @@ import com.liulkovich.florapoint.data.AppDatabase
 import com.liulkovich.florapoint.data.MIGRATION_17_18
 import com.liulkovich.florapoint.data.MIGRATION_18_19
 import com.liulkovich.florapoint.data.MIGRATION_19_20
+import com.liulkovich.florapoint.data.MIGRATION_20_21
+import com.liulkovich.florapoint.data.MIGRATION_21_22
 import com.liulkovich.florapoint.data.OfflineRegionDao
 import com.liulkovich.florapoint.data.ReferenceDao
 import com.liulkovich.florapoint.data.SpeciesConditionsDao
@@ -34,7 +36,9 @@ object DatabaseModule {
             .addMigrations(
                 MIGRATION_17_18,
                 MIGRATION_18_19,
-                MIGRATION_19_20
+                MIGRATION_19_20,
+                MIGRATION_20_21,
+                MIGRATION_21_22
             )
             .build()
     }

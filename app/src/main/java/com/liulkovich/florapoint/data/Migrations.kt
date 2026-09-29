@@ -233,3 +233,517 @@ val MIGRATION_19_20 = object : Migration(19, 20) {
         )
     }
 }
+val MIGRATION_20_21 = object : Migration(20, 21) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'boletus_edulis,boletus_edulis2'
+            WHERE id = 1
+        """.trimIndent())
+
+
+    }
+}
+
+val MIGRATION_21_22 = object : Migration(21, 22) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'leccinum_scabrum,leccinum_scabrum2'
+            WHERE id = 2
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'leccinum_aurantiacum,leccinum_aurantiacum2'
+            WHERE id = 3
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'cantharellus_cibarius,cantharellus_cibarius2'
+            WHERE id = 4
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'armillaria_mellea,armillaria_mellea2'
+            WHERE id = 5
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'suillus_luteus,suillus_luteus2'
+            WHERE id = 6
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_deliciosus,lactarius_deliciosus2'
+            WHERE id = 7
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'russula_virescens,russula_virescens2'
+            WHERE id = 8
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_resimus,lactarius_resimus2'
+            WHERE id = 9
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_torminosus,lactarius_torminosus2'
+            WHERE id = 10
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'agaricus_sylvaticus,agaricus_sylvaticus2'
+            WHERE id = 11
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'morchella_esculenta,morchella_esculenta2'
+            WHERE id = 12
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lycoperdon_perlatum,lycoperdon_perlatum2'
+            WHERE id = 13
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'imleria_badia,imleria_badia2'
+            WHERE id = 14
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'pleurotus_ostreatus,pleurotus_ostreatus2'
+            WHERE id = 15
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'macrolepiota_procera,macrolepiota_procera2'
+            WHERE id = 16
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_necator,lactarius_necator2'
+            WHERE id = 17
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'xerocomus_subtomentosus,xerocomus_subtomentosus2'
+            WHERE id = 18
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lepista_nuda,lepista_nuda2'
+            WHERE id = 19
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'hydnum_repandum,hydnum_repandum2'
+            WHERE id = 20
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'tuber_aestivum,tuber_aestivum2'
+            WHERE id = 21
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_flexuosus,lactarius_flexuosus2'
+            WHERE id = 22
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'leccinum_rufum,leccinum_rufum2'
+            WHERE id = 23
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'clitocybe_nebularis,clitocybe_nebularis2'
+            WHERE id = 24
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'cortinarius_caparatus,cortinarius_caparatus2'
+            WHERE id = 25
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'amanita_phalloides,amanita_phalloides2'
+            WHERE id = 26
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'amanita_muscaria,amanita_muscaria2'
+            WHERE id = 27
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'gyromitra_esculenta,gyromitra_esculenta2'
+            WHERE id = 28
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'vaccinium_myrtillus,vaccinium_myrtillus2'
+            WHERE id = 29
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'vaccinium_vitis_idaea,vaccinium_vitis_idaea2'
+            WHERE id = 30
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'vaccinium_oxycoccos,vaccinium_oxycoccos2'
+            WHERE id = 31
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rubus_idaeus,rubus_idaeus2'
+            WHERE id = 32
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rubus_fruticosus,rubus_fruticosus2'
+            WHERE id = 33
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'fragaria_vesca,fragaria_vesca2'
+            WHERE id = 34
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rubus_chamaemorus,rubus_chamaemorus2'
+            WHERE id = 35
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'vaccinium_corymbosum,vaccinium_corymbosum2'
+            WHERE id = 36
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rubus_saxatilis,rubus_saxatilis2'
+            WHERE id = 37
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rosa_canina,rosa_canina2'
+            WHERE id = 38
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'sorbus_aucuparia,sorbus_aucuparia2'
+            WHERE id = 39
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'hippophae_rhamnoides,hippophae_rhamnoides2'
+            WHERE id = 40
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'sambucus_nigra,sambucus_nigra2'
+            WHERE id = 41
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'amelanchier_alnifolia,amelanchier_alnifolia2'
+            WHERE id = 42
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'viburnum_opulus,viburnum_opulus2'
+            WHERE id = 43
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lonicera_caerulea,lonicera_caerulea2'
+            WHERE id = 44
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'ribes_rubrum,ribes_rubrum2'
+            WHERE id = 45
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'ribes_nigrum,ribes_nigrum2'
+            WHERE id = 46
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rubus_arcticus,rubus_arcticus2'
+            WHERE id = 47
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'arctostaphylos_uva_ursi,arctostaphylos_uva_ursi2'
+            WHERE id = 48
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'corylus_avellana,corylus_avellana2'
+            WHERE id = 49
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'juglans_regia,juglans_regia2'
+            WHERE id = 50
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'pinus_sibirica,pinus_sibirica2'
+            WHERE id = 51
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'castanea_sativa,castanea_sativa2'
+            WHERE id = 52
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'fagus_sylvatica,fagus_sylvatica2'
+            WHERE id = 53
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'carya_illinoinensis,carya_illinoinensis2'
+            WHERE id = 54
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'prunus_dulcis,prunus_dulcis2'
+            WHERE id = 55
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'urtica_dioica,urtica_dioica2'
+            WHERE id = 56
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'allium_ursinum,allium_ursinum2'
+            WHERE id = 57
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'rumex_acetosa,rumex_acetosa2'
+            WHERE id = 58
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'taraxacum_officinale,taraxacum_officinale2'
+            WHERE id = 59
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'chamerion_angustifolium,chamerion_angustifolium2'
+            WHERE id = 60
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'plantago_major,plantago_major2'
+            WHERE id = 61
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'thymus_serpyllum,thymus_serpyllum2'
+            WHERE id = 62
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'hypericum_perforatum,hypericum_perforatum2'
+            WHERE id = 63
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'mentha_arvensis,mentha_arvensis2'
+            WHERE id = 64
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'matricaria_chamomilla,matricaria_chamomilla2'
+            WHERE id = 65
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'arctium_lappa,arctium_lappa2'
+            WHERE id = 66
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'pteridium_aquilinum,pteridium_aquilinum2'
+            WHERE id = 67
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'oxalis_acetosella,oxalis_acetosella2'
+            WHERE id = 68
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'pulmonaria_officinalis,pulmonaria_officinalis2'
+            WHERE id = 69
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'achillea_millefolium,achillea_millefolium2'
+            WHERE id = 70
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'tylopilus_felleus,tylopilus_felleus2'
+            WHERE id = 71
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'hygrophoropsis_aurantiaca,hygrophoropsis_aurantiaca2'
+            WHERE id = 72
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'scleroderma_citrinum,scleroderma_citrinum2'
+            WHERE id = 73
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'hypholoma_fasciculare,hypholoma_fasciculare2'
+            WHERE id = 74
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'amanita_pantherina,amanita_pantherina2'
+            WHERE id = 75
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'cortinarius_violaceus,cortinarius_violaceus2'
+            WHERE id = 76
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_vellereus,lactarius_vellereus2'
+            WHERE id = 77
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'lactarius_deliciosus,lactarius_deliciosus2'
+            WHERE id = 78
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'clitocybe_dealbata,clitocybe_dealbata2'
+            WHERE id = 79
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'quercus_acorns,quercus_acorns2'
+            WHERE id = 80
+        """.trimIndent())
+
+        db.execSQL("""
+            UPDATE reference_table
+            SET image_name = 'asimina_triloba,asimina_triloba2'
+            WHERE id = 81
+        """.trimIndent())
+
+        db.execSQL(
+            """
+            UPDATE reference_table
+            SET name_ru = 'Чернушка(Груздь чёрный)'
+            WHERE id = 17
+            """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            UPDATE reference_table
+            SET name_ru = 'Чабрец(Тимьян)'
+            WHERE id = 62
+            """.trimIndent()
+        )
+    }
+}
+

@@ -208,15 +208,25 @@ fun GuideCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val firstImageName = remember(imageName) {
+                imageName
+                    .split(",")
+                    .map { it.trim() }
+                    .firstOrNull()
+                    ?: ""
+            }
+
             AsyncImage(
                 model = ImageRequest.Builder(context)
                     .data(
                         context.resources.getIdentifier(
-                            imageName, "drawable", context.packageName
+                            firstImageName,
+                            "drawable",
+                            context.packageName
                         ).takeIf { it != 0 } ?: R.drawable.ic_launcher_background
                     )
                     .crossfade(true)
-                    .size(144) // 72dp * 2 для density
+                    .size(144)
                     .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,

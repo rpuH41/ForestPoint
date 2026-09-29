@@ -340,6 +340,13 @@ fun HomeSeasonCard(
 ) {
     val context = LocalContext.current
 
+    val firstImageName = remember(imageName) {
+        imageName
+            .split(",")
+            .map { it.trim() }
+            .randomOrNull() ///.randomOrNull()   .firstOrNull()
+            ?: ""
+    }
     Card(
         modifier = modifier
             .width(165.dp)
@@ -354,7 +361,7 @@ fun HomeSeasonCard(
                     model = ImageRequest.Builder(context)
                         .data(
                             context.resources.getIdentifier(
-                                imageName, "drawable", context.packageName
+                                firstImageName, "drawable", context.packageName
                             ).takeIf { it != 0 } ?: R.drawable.ic_launcher_background
                         )
                         .crossfade(true)
@@ -365,11 +372,9 @@ fun HomeSeasonCard(
                         .fillMaxWidth()
                         .height(50.dp)
                 )
-
                 var selectedNotif by remember(reference.id) {
                     mutableStateOf(reference.isNotifEnabled == 1)
                 }
-
                 IconToggleButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     checked = selectedNotif,
