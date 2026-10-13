@@ -70,6 +70,7 @@ class ForecastViewModel @Inject constructor(
                 )
 
             _state.update {
+
                 it.copy(
                     isLoading = true,
 
