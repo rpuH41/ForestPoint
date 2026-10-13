@@ -41,6 +41,7 @@ import com.liulkovich.florapoint.domain.ForecastItem
 import com.liulkovich.florapoint.domain.localizedName
 import com.liulkovich.florapoint.presentation.screens.map.CurrentWeather
 import com.liulkovich.florapoint.domain.LocationUtils
+import androidx.compose.material.icons.filled.Warning
 
 @Composable
 fun ForecastScreen(
@@ -60,7 +61,9 @@ fun ForecastScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)) {
             Text(
                 text = stringResource(R.string.forecast_title),
                 style = MaterialTheme.typography.titleLarge,
@@ -120,6 +123,134 @@ fun ForecastScreen(
                     )
                 }
             }
+            // Социальный прогноз
+            if (state.socialLoading) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(14.dp),
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.forecast_analyzing_social_data),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else if (!state.socialMessage.isNullOrBlank()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(text = "💬", style = MaterialTheme.typography.titleMedium)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = state.socialMessage!!,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+            } else if (state.socialError != null) {
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 8.dp,
+                            vertical = 8.dp
+                        ),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor =
+                            MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Icon(
+                            imageVector =
+                                if (
+                                    state.socialError ==
+                                    SocialForecastError.NO_INTERNET
+                                ) {
+                                    Icons.Default.WifiOff
+                                } else {
+                                    Icons.Default.Warning
+                                },
+                            contentDescription = null,
+                            tint =
+                                MaterialTheme.colorScheme
+                                    .onErrorContainer
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+
+                        Column {
+                            Text(
+                                text =
+                                    when (state.socialError) {
+                                        SocialForecastError.NO_INTERNET ->
+                                            stringResource(
+                                                R.string.social_no_internet_title
+                                            )
+
+                                        SocialForecastError.SERVICE_UNAVAILABLE ->
+                                            stringResource(
+                                                R.string.social_service_error_title
+                                            )
+
+                                        null -> ""
+                                    },
+                                style =
+                                    MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color =
+                                    MaterialTheme.colorScheme
+                                        .onErrorContainer
+                            )
+
+                            Spacer(Modifier.height(4.dp))
+
+                            Text(
+                                text =
+                                    when (state.socialError) {
+                                        SocialForecastError.NO_INTERNET ->
+                                            stringResource(
+                                                R.string.social_no_internet_message
+                                            )
+
+                                        SocialForecastError.SERVICE_UNAVAILABLE ->
+                                            stringResource(
+                                                R.string.social_service_error_message
+                                            )
+
+                                        null -> ""
+                                    },
+                                style =
+                                    MaterialTheme.typography.bodySmall,
+                                color =
+                                    MaterialTheme.colorScheme
+                                        .onErrorContainer
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         when {
@@ -130,7 +261,9 @@ fun ForecastScreen(
             }
 
             state.noWeather -> {
-                Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.WifiOff, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
                         Spacer(Modifier.height(8.dp))
@@ -140,7 +273,9 @@ fun ForecastScreen(
             }
 
             state.items.isEmpty() -> {
-                Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp), contentAlignment = Alignment.Center) {
                     Text(stringResource(R.string.no_suitable_species), color = MaterialTheme.colorScheme.outline)
                 }
             }

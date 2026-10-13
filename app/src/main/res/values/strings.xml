@@ -198,6 +198,10 @@
     <string name="restart">Перезапустить</string>
     <string name="clear">Очистить</string>
     <string name="differences_from_original">Чем отличается</string>
-    <string name="all_seasons">Все</string>">
-
+    <string name="all_seasons">Все</string>
+    <string name="forecast_analyzing_social_data">Анализируем соцсети…</string>">
+    <string name="social_no_internet_title">Нет подключения к интернету</string>
+    <string name="social_no_internet_message">Не удалось получить свежие грибные данные. Проверьте подключение к интернету.</string>
+    <string name="social_service_error_title">Не удалось обновить прогноз</string>
+    <string name="social_service_error_message">Сервис временно недоступен. Попробуйте ещё раз позже.</string>
 </resources>

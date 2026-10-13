@@ -110,6 +110,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.functions.ktx)
+    implementation(libs.kotlinx.coroutines.play.services)
     //Google
     implementation(libs.play.services.auth)
     implementation(libs.app.update.ktx)
