@@ -44,9 +44,16 @@ import com.liulkovich.florapoint.presentation.screens.settings.OfflineRegionsScr
 import com.liulkovich.florapoint.presentation.screens.settings.SettingsScreen
 import com.liulkovich.florapoint.presentation.weather.WeatherViewModel
 import com.google.android.gms.location.Priority
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 
 @Composable
-fun NavGraph() {
+fun NavGraph(
+    snackbarHostState: SnackbarHostState
+) {
     val navController = rememberNavController()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     val context = LocalContext.current
@@ -92,6 +99,14 @@ fun NavGraph() {
     }
 
     Scaffold(
+       contentWindowInsets = WindowInsets.safeDrawing,
+
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            )
+        },
+
         bottomBar = {
             if (showBottomBar) {
                 val configuration = LocalConfiguration.current
@@ -125,7 +140,9 @@ fun NavGraph() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.rout,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
         ) {
             composable(Screen.Home.rout) {
                 HomeScreen(

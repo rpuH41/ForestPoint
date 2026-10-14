@@ -6,15 +6,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.google.android.material.snackbar.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.InstallStateUpdatedListener
@@ -24,7 +24,6 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.liulkovich.florapoint.presentation.auth.AuthManager
 import com.liulkovich.florapoint.presentation.navigation.NavGraph
 import com.liulkovich.florapoint.presentation.screens.home.HomeViewModel
-import com.liulkovich.florapoint.presentation.splash.SplashScreen
 import com.liulkovich.florapoint.presentation.ui.theme.FloraPointTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -32,6 +31,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    private val updateSnackbarHostState = SnackbarHostState()
     val homeViewModel: HomeViewModel by viewModels()
 
     @Inject
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        WindowCompat.enableEdgeToEdge(window)
         requestNotificationPermission()
         appUpdateManager.registerListener(installStateUpdatedListener)
         checkForUpdate()
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             FloraPointTheme {
-                NavGraph()
+                NavGraph(snackbarHostState = updateSnackbarHostState)
             }
         }
     }
@@ -116,13 +116,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showRestartSnackbar() {
-        Snackbar.make(
-            findViewById(android.R.id.content),
-            getString(com.liulkovich.florapoint.R.string.update_ready),
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction(getString(com.liulkovich.florapoint.R.string.restart)) {
-            appUpdateManager.completeUpdate()
-        }.show()
+        lifecycleScope.launch {
+            val result = updateSnackbarHostState.showSnackbar(
+                message = getString(
+                    com.liulkovich.florapoint.R.string.update_ready
+                ),
+                actionLabel = getString(
+                    com.liulkovich.florapoint.R.string.restart
+                ),
+                duration = SnackbarDuration.Indefinite
+            )
+
+            if (result == SnackbarResult.ActionPerformed) {
+                appUpdateManager.completeUpdate()
+            }
+        }
     }
 
     private fun requestNotificationPermission() {

@@ -32,7 +32,6 @@
 -dontwarn androidx.room.**
 
 # ============ Firebase ============
--keep class com.google.firebase.** { *; }
 -keep class com.google.android.gms.** { *; }
 #-keep class com.liulkovich.florapoint.domain.** { *; }
 #-keep class com.liulkovich.florapoint.domain.cloud.** { *; }
@@ -68,7 +67,6 @@
 }
 
 # Если используешь Coil / Glide
--keep class coil.** { *; }
 -keep class com.bumptech.glide.** { *; }
 -dontwarn coil.**
 -dontwarn com.bumptech.glide.**
