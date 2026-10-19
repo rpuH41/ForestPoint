@@ -63,6 +63,7 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.filled.Check
+import android.util.Log
 
 @Composable
 fun SettingsScreen(
@@ -96,6 +97,7 @@ fun SettingsScreen(
                  Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
             },
             onError = { error ->
+                Log.e("GoogleSignIn", "Sign-in failed: $error")
                 Toast.makeText(context, errorMessageTemplate,
                     Toast.LENGTH_LONG).show()
             }
