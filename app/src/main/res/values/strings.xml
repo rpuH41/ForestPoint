@@ -204,4 +204,19 @@
     <string name="social_no_internet_message">Не удалось получить свежие грибные данные. Проверьте подключение к интернету.</string>
     <string name="social_service_error_title">Не удалось обновить прогноз</string>
     <string name="social_service_error_message">Сервис временно недоступен. Попробуйте ещё раз позже.</string>
+    <string name="map_provider_osm">OpenStreetMap</string>
+    <string name="map_provider_google">Google Maps</string>
+    <string name="map_layers_description">Слои карты</string>
+    <string name="google_map_layer_normal">Обычная</string>
+    <string name="google_map_layer_satellite">Спутник</string>
+    <string name="google_map_layer_hybrid">Гибрид</string>
+    <string name="google_map_layer_terrain">Рельеф</string>
+    <string name="map_layer_selected">✓ %1$s</string>
+    <string name="map_selected_location">Выбранное место</string>
+    <string name="map_weather_avg_temperature">🌡️ %1$s°</string>
+    <string name="map_point_temperature">☀️ %1$s°</string>
+    <string name="map_point_humidity">💧 %1$s%%</string>
+    <string name="map_point_avg_temperature">🌡️ Ø %1$s°</string>
+    <string name="map_point_avg_humidity">💧 Ø %1$s%%</string>
+
 </resources>

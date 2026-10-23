@@ -205,4 +205,19 @@
     <string name="social_no_internet_message">Unable to get fresh mushroom data. Check your internet connection.</string>
     <string name="social_service_error_title">Unable to update forecast</string>
     <string name="social_service_error_message">The service is temporarily unavailable. Please try again later.</string>
+    <string name="map_provider_osm">OpenStreetMap</string>
+    <string name="map_provider_google">Google Maps</string>
+    <string name="map_layers_description">Map layers</string>
+    <string name="google_map_layer_normal">Normal</string>
+    <string name="google_map_layer_satellite">Satellite</string>
+    <string name="google_map_layer_hybrid">Hybrid</string>
+    <string name="google_map_layer_terrain">Terrain</string>
+    <string name="map_layer_selected">✓ %1$s</string>
+    <string name="map_selected_location">Selected location</string>
+    <string name="map_weather_avg_temperature">🌡️ %1$s°</string>
+    <string name="map_point_temperature">☀️ %1$s°</string>
+    <string name="map_point_humidity">💧 %1$s%%</string>
+    <string name="map_point_avg_temperature">🌡️ Ø %1$s°</string>
+    <string name="map_point_avg_humidity">💧 Ø %1$s%%</string>
+
 </resources>

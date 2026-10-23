@@ -1,6 +1,12 @@
 package com.liulkovich.florapoint.presentation.components
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 import com.liulkovich.florapoint.R
 import com.liulkovich.florapoint.domain.Reference
 import com.liulkovich.florapoint.domain.UserPoints
@@ -46,14 +53,6 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import android.graphics.Bitmap
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import androidx.core.graphics.toColorInt
-import android.graphics.Path
 
 @SuppressLint("LocalContextResourcesRead")
 @Composable
@@ -292,7 +291,7 @@ fun OsmMapView(
         }
     }
 }
-private fun createSelectionMarkerBitmap(
+internal  fun createSelectionMarkerBitmap(
     context: Context
 ): Drawable {
     val density = context.resources.displayMetrics.density

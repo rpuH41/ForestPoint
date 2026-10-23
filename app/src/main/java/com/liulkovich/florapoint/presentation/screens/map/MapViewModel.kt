@@ -421,6 +421,13 @@ class MapViewModel @Inject constructor(
                 point.ownerUid != authManager.getCurrentUserId()
     }
 
+    fun setMapProvider(provider: MapProvider) {
+        _state.update { it.copy(mapProvider = provider) }
+    }
+
+    fun setGoogleMapLayer(layer: GoogleMapLayer) {
+        _state.update { it.copy(googleMapLayer = layer) }
+    }
     fun togglePointsFilter() {
         _state.update {
             it.copy(
@@ -434,7 +441,6 @@ class MapViewModel @Inject constructor(
     fun loadCurrentWeather(lat: Double, lon: Double) {
         val now = System.currentTimeMillis()
         if (now - lastMapWeatherTime < 60 * 60 * 1000L) return
-        lastMapWeatherTime = now
 
         viewModelScope.launch(Dispatchers.IO) {
             val weather = weatherService.getWeatherData(lat, lon)
@@ -445,6 +451,7 @@ class MapViewModel @Inject constructor(
                 weather.avgHumidity5Days != null &&
                 weather.rainSum5Days != null
             ) {
+                lastMapWeatherTime = System.currentTimeMillis()
                 _state.update {
                     it.copy(
                         currentWeather = CurrentWeather(
@@ -530,6 +537,8 @@ data class MapScreenState(
     val deepLinkName: String = "",
     val deepLinkCategory: String = "",
     val showOnlyMyPoints: Boolean = true,
+    val mapProvider: MapProvider = MapProvider.OSM,
+    val googleMapLayer: GoogleMapLayer = GoogleMapLayer.NORMAL,
     val currentWeather: CurrentWeather? = null,
     val sortedPointsWithDistance: List<Pair<UserPoints, Double?>> = emptyList()
 )

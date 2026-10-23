@@ -6,18 +6,21 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import com.liulkovich.florapoint.presentation.components.GoogleMapView
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import com.google.maps.android.compose.MapType
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import com.liulkovich.florapoint.presentation.screens.map.utils.isOnline
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -84,6 +87,10 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import androidx.compose.ui.focus.FocusManager
 import java.text.SimpleDateFormat
 import java.util.Date
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.mutableIntStateOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,8 +155,9 @@ fun MapScreen(
     }
 
     val sharedLocation by weatherViewModel.currentLocation.collectAsStateWithLifecycle()
+    val online by isOnline()
 
-    LaunchedEffect(sharedLocation) {
+    LaunchedEffect(sharedLocation, online) {
         sharedLocation?.let { (lat, lon) ->
             viewModel.updateCurrentLocation(lat, lon)
         }
@@ -411,18 +419,20 @@ fun MapScreen(
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                                 ) {
+
                                     point.temperature?.let {
-                                        Text("☀️ ${it.toInt()}°")
+                                        Text(stringResource(R.string.map_point_temperature, it.toInt().toString()))
                                     }
                                     point.humidity?.let {
-                                        Text("💧 ${it}%")
+                                        Text(stringResource(R.string.map_point_humidity, it.toString()))
                                     }
                                     point.avgTemp5Days?.let {
-                                        Text("🌡️ Ø ${it.toInt()}°")
+                                        Text(stringResource(R.string.map_point_avg_temperature, it.toInt().toString()))
                                     }
                                     point.avgHumidity5Days?.let {
-                                        Text("💧 Ø ${it}%")
+                                        Text(stringResource(R.string.map_point_avg_humidity, it.toString()))
                                     }
+
                                 }
                             }
                         }
@@ -458,8 +468,14 @@ private fun MapContent(
     val legendButtonHeight = if (isLandscape) 28.dp else 36.dp
     val legendButtonFontSize = if (isLandscape) 11.sp else 13.sp
     val legendIconSize = if (isLandscape) 12.dp else 16.dp
+    var mapMenuExpanded by remember { mutableStateOf(false) }
+    var googleRecenterRequest by remember { mutableIntStateOf(0) }
+    var googleGpsLocation by remember { mutableStateOf<Pair<Double, Double>?>(null) }
+    var googleZoomInRequest by remember { mutableIntStateOf(0) }
+    var googleZoomOutRequest by remember { mutableIntStateOf(0) }
 
     Box(modifier = modifier) {
+        if (state.mapProvider == MapProvider.OSM) {
         OsmMapView(
             modifier = Modifier
                 .fillMaxSize()
@@ -508,6 +524,150 @@ private fun MapContent(
             },
 
         )
+        } else {
+
+            GoogleMapView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp)),
+
+                mapType = when (state.googleMapLayer) {
+                    GoogleMapLayer.NORMAL -> MapType.NORMAL
+                    GoogleMapLayer.SATELLITE -> MapType.SATELLITE
+                    GoogleMapLayer.HYBRID -> MapType.HYBRID
+                    GoogleMapLayer.TERRAIN -> MapType.TERRAIN
+                },
+                onLocationUpdate = { coordinates ->
+                    googleGpsLocation = coordinates
+                },
+                points = mapPoints,
+                species = state.species,
+                selectedPointId = state.selectedPointId,
+                currentLocation = state.currentUserLocation,
+                currentWeather = state.currentWeather,
+                shouldFollowLocation = shouldFollowLocation,
+                recenterRequest = googleRecenterRequest,
+                zoomInRequest = googleZoomInRequest,
+                zoomOutRequest = googleZoomOutRequest,
+                focusLocation = forceCenter?.let {
+                    it.latitude to it.longitude
+                },
+
+                selectedMapLocation = selectedMapLocation?.let {
+                    it.latitude to it.longitude
+                },
+
+                onMarkerClick = { point ->
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+
+                    if (viewModel.isPublicForeignPoint(point)) {
+                        viewModel.onPublicPointClicked(point)
+                    } else {
+                        viewModel.onPointClicked(point)
+                    }
+
+                    onShouldFollowLocationChange(false)
+                },
+                onMapClick = { location ->
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+
+                    val geoPoint = GeoPoint(
+                        location.latitude,
+                        location.longitude
+                    )
+
+                    onSelectedMapLocationChange(geoPoint)
+                    onShouldFollowLocationChange(false)
+                    onForceCenterChange(geoPoint)
+
+                    viewModel.onAddNewPointClicked(
+                        location.latitude,
+                        location.longitude
+                    )
+                }
+            )
+
+        }
+
+        Box(
+            modifier = Modifier
+                .align(
+                    if (isLandscape) Alignment.TopStart
+                    else Alignment.TopEnd
+                )
+                .padding(
+                    top = if (isLandscape) 8.dp else 64.dp,
+                    start = if (isLandscape) contentPadding else 0.dp,
+                    end = if (isLandscape) 0.dp else contentPadding
+                )
+        ) {
+            FloatingActionButton(
+                onClick = { mapMenuExpanded = true },
+                modifier = Modifier.size(fabSize),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Layers,
+                    contentDescription = stringResource(R.string.map_layers_description),
+                    modifier = Modifier.size(fabIconSize)
+                )
+            }
+
+            DropdownMenu(
+                expanded = mapMenuExpanded,
+                onDismissRequest = { mapMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.map_provider_osm)) },
+                    onClick = {
+                        viewModel.setMapProvider(MapProvider.OSM)
+                        mapMenuExpanded = false
+                    }
+                )
+
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.map_provider_google)) },
+                    onClick = {
+                        viewModel.setMapProvider(MapProvider.GOOGLE)
+                        mapMenuExpanded = false
+                    }
+                )
+
+                if (state.mapProvider == MapProvider.GOOGLE) {
+                    HorizontalDivider()
+
+                    listOf(
+                        GoogleMapLayer.NORMAL to R.string.google_map_layer_normal,
+                        GoogleMapLayer.SATELLITE to R.string.google_map_layer_satellite,
+                        GoogleMapLayer.HYBRID to R.string.google_map_layer_hybrid,
+                        GoogleMapLayer.TERRAIN to R.string.google_map_layer_terrain
+                    ).forEach { (layer, titleRes) ->
+                        DropdownMenuItem(
+
+                            text = {
+                                val title = stringResource(titleRes)
+
+                                Text(
+                                    text = if (state.googleMapLayer == layer) {
+                                        stringResource(R.string.map_layer_selected, title)
+                                    } else {
+                                        title
+                                    }
+                                )
+                            },
+                            onClick = {
+                                viewModel.setGoogleMapLayer(layer)
+                                mapMenuExpanded = false
+                            }
+                        )
+                    }
+                }
+
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -518,6 +678,9 @@ private fun MapContent(
         ) {
             FloatingActionButton(
                 onClick = {
+                    if (state.mapProvider == MapProvider.GOOGLE) {
+                        googleRecenterRequest++
+                    }
 
                     onSelectedMapLocationChange(null)
 
@@ -549,14 +712,26 @@ private fun MapContent(
                 )
             }
             FloatingActionButton(
-                onClick = { mapViewRef.value?.controller?.zoomIn() },
+                onClick = {
+                    if (state.mapProvider == MapProvider.GOOGLE) {
+                        googleZoomInRequest++
+                    } else {
+                        mapViewRef.value?.controller?.zoomIn()
+                    }
+                },
                 modifier = Modifier.size(fabSize),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(fabIconSize))
             }
             FloatingActionButton(
-                onClick = { mapViewRef.value?.controller?.zoomOut() },
+                onClick = {
+                    if (state.mapProvider == MapProvider.GOOGLE) {
+                        googleZoomOutRequest++
+                    } else {
+                        mapViewRef.value?.controller?.zoomOut()
+                    }
+                },
                 modifier = Modifier.size(fabSize),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
@@ -572,45 +747,27 @@ private fun MapContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                            onClick = {
-                                val overlay = myLocationOverlayRef.value
-                                val myLoc = overlay?.myLocation
 
-                                if (myLoc != null) {
-                                    val point = GeoPoint(
-                                        myLoc.latitude,
-                                        myLoc.longitude
-                                    )
+                        onClick = {
+                            val location = if (state.mapProvider == MapProvider.GOOGLE) {
+                                googleGpsLocation ?: state.currentUserLocation
+                            } else {
+                                myLocationOverlayRef.value?.myLocation?.let {
+                                    it.latitude to it.longitude
+                                } ?: state.currentUserLocation
+                            }
 
-                                    onSelectedMapLocationChange(point)
-                                    onShouldFollowLocationChange(false)
-                                    onForceCenterChange(point)
+                            location?.let { (lat, lon) ->
+                                val point = GeoPoint(lat, lon)
 
-                                    viewModel.onAddNewPointClicked(
-                                        myLoc.latitude,
-                                        myLoc.longitude
-                                    )
+                                onSelectedMapLocationChange(point)
+                                onShouldFollowLocationChange(false)
+                                onForceCenterChange(point)
 
-                                } else {
-                                    val loc = state.currentUserLocation
+                                viewModel.onAddNewPointClicked(lat, lon)
+                            }
+                        },
 
-                                    if (loc != null) {
-                                        val point = GeoPoint(
-                                            loc.first,
-                                            loc.second
-                                        )
-
-                                        onSelectedMapLocationChange(point)
-                                        onShouldFollowLocationChange(false)
-                                        onForceCenterChange(point)
-
-                                        viewModel.onAddNewPointClicked(
-                                            loc.first,
-                                            loc.second
-                                        )
-                                    }
-                                }
-                            },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF1B5E20),
                             contentColor = Color.White
