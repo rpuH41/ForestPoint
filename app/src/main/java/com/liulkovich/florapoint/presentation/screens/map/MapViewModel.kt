@@ -34,6 +34,7 @@ import javax.inject.Inject
 import com.google.firebase.firestore.ListenerRegistration
 import android.util.Log
 import com.liulkovich.florapoint.domain.LocationUtils
+import kotlinx.coroutines.flow.first
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
@@ -50,6 +51,8 @@ class MapViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(MapScreenState())
     val state = _state.asStateFlow()
+
+    private val mapPreferences = MapPreferences(context)
 
     private val _command = MutableSharedFlow<MapCommand>(extraBufferCapacity = 1)
     val command = _command.asSharedFlow()
@@ -73,6 +76,17 @@ class MapViewModel @Inject constructor(
             .launchIn(viewModelScope)
 
         observePublicPoints()
+
+        viewModelScope.launch {
+            val saved = mapPreferences.settings.first()
+
+            _state.update {
+                it.copy(
+                    mapProvider = saved.provider,
+                    googleMapLayer = saved.layer
+                )
+            }
+        }
 
     }
 
@@ -421,13 +435,23 @@ class MapViewModel @Inject constructor(
                 point.ownerUid != authManager.getCurrentUserId()
     }
 
+
     fun setMapProvider(provider: MapProvider) {
         _state.update { it.copy(mapProvider = provider) }
+
+        viewModelScope.launch {
+            mapPreferences.saveProvider(provider)
+        }
     }
 
     fun setGoogleMapLayer(layer: GoogleMapLayer) {
         _state.update { it.copy(googleMapLayer = layer) }
+
+        viewModelScope.launch {
+            mapPreferences.saveLayer(layer)
+        }
     }
+
     fun togglePointsFilter() {
         _state.update {
             it.copy(
