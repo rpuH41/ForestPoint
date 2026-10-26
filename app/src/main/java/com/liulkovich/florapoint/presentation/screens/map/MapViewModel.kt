@@ -158,8 +158,15 @@ class MapViewModel @Inject constructor(
 
             val allPoints = state.value.userPoints
 
-            val pointsToUpdate = allPoints.filter {
-                it.avgTemp5Days == null || it.avgHumidity5Days == null
+            val nowSeconds = System.currentTimeMillis() / 1000
+
+            val pointsToUpdate = allPoints.filter { point ->
+                val weatherMissing =
+                    point.avgTemp5Days == null || point.avgHumidity5Days == null
+
+                val isOldPoint = nowSeconds - point.timestamp >= 120L
+
+                weatherMissing && isOldPoint
             }
 
             if (pointsToUpdate.isEmpty()) return@launch

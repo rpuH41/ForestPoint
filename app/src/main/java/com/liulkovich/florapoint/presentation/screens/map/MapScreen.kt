@@ -177,20 +177,8 @@ fun MapScreen(
         }
     }
 
-    val mapPoints = remember(
-        state.userPoints,
-        state.publicPoints,
-        state.showOnlyMyPoints
-    ) {
-        if (!viewModel.isAuthorized()) {
-            state.userPoints
-        } else {
-            if (state.showOnlyMyPoints) {
-                state.userPoints
-            } else {
-                state.userPoints + state.publicPoints
-            }
-        }
+    val mapPoints = remember(state.sortedPointsWithDistance) {
+        state.sortedPointsWithDistance.map { (point, _) -> point }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
