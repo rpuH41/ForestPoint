@@ -91,6 +91,9 @@ import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.material3.FloatingActionButtonDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -605,8 +608,19 @@ private fun MapContent(
         ) {
             FloatingActionButton(
                 onClick = { mapMenuExpanded = true },
-                modifier = Modifier.size(fabSize),
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                modifier = Modifier
+                    .size(fabSize)
+                    .graphicsLayer {
+                        alpha = 0.75f
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp
+                )
             ) {
                 Icon(
                     imageVector = Icons.Default.Layers,
@@ -615,12 +629,29 @@ private fun MapContent(
                 )
             }
 
+
             DropdownMenu(
                 expanded = mapMenuExpanded,
-                onDismissRequest = { mapMenuExpanded = false }
+                onDismissRequest = { mapMenuExpanded = false },
+                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                    alpha = 0.85f
+                ),
+                tonalElevation = 0.dp,
+                shadowElevation = 0.dp
             ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.map_provider_osm)) },
+
+            DropdownMenuItem(
+                    text = {
+                        val title = stringResource(R.string.map_provider_osm)
+                        Text(
+                            text = if (state.mapProvider == MapProvider.OSM) {
+                                stringResource(R.string.map_layer_selected, title)
+                            } else {
+                                title
+                            }
+                        )
+                    },
                     onClick = {
                         viewModel.setMapProvider(MapProvider.OSM)
                         mapMenuExpanded = false
@@ -629,7 +660,16 @@ private fun MapContent(
 
 
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.map_provider_google)) },
+                    text = {
+                        val title = stringResource(R.string.map_provider_google)
+                        Text(
+                            text = if (state.mapProvider == MapProvider.GOOGLE) {
+                                stringResource(R.string.map_layer_selected, title)
+                            } else {
+                                title
+                            }
+                        )
+                    },
                     onClick = {
                         viewModel.setMapProvider(MapProvider.GOOGLE)
                         mapMenuExpanded = false
@@ -646,7 +686,8 @@ private fun MapContent(
                         GoogleMapLayer.TERRAIN to R.string.google_map_layer_terrain
                     ).forEach { (layer, titleRes) ->
                         DropdownMenuItem(
-
+                            modifier = Modifier.height(36.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp),
                             text = {
                                 val title = stringResource(titleRes)
 
@@ -702,8 +743,19 @@ private fun MapContent(
                         }
                     }
                 },
-                modifier = Modifier.size(fabSize),
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                modifier = Modifier
+                    .size(fabSize)
+                    .graphicsLayer {
+                        alpha = 0.75f
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp
+                )
             ) {
                 Icon(
                     Icons.Default.LocationSearching,
@@ -719,8 +771,19 @@ private fun MapContent(
                         mapViewRef.value?.controller?.zoomIn()
                     }
                 },
-                modifier = Modifier.size(fabSize),
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                modifier = Modifier
+                    .size(fabSize)
+                    .graphicsLayer {
+                        alpha = 0.75f
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp
+                )
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(fabIconSize))
             }
@@ -732,8 +795,19 @@ private fun MapContent(
                         mapViewRef.value?.controller?.zoomOut()
                     }
                 },
-                modifier = Modifier.size(fabSize),
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                modifier = Modifier
+                    .size(fabSize)
+                    .graphicsLayer {
+                        alpha = 0.75f
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp
+                )
             ) {
                 Icon(Icons.Default.Remove, contentDescription = null, modifier = Modifier.size(fabIconSize))
             }
