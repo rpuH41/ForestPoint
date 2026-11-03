@@ -2,6 +2,7 @@ package com.liulkovich.florapoint.presentation.screens.guide
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,15 +17,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -51,14 +56,55 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.liulkovich.florapoint.R
 import com.liulkovich.florapoint.domain.FloraCategory
 import com.liulkovich.florapoint.domain.Reference
 import com.liulkovich.florapoint.domain.localizedName
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.IconButton
+
+
+private enum class ForestType {
+    CONIFEROUS,
+    DECIDUOUS,
+    MIXED
+}
+
+private fun matchesForest(
+    reference: Reference,
+    forest: ForestType?
+): Boolean {
+    if (forest == null) return true
+
+    if (reference.category != FloraCategory.MUSHROOM.key) {
+        return false
+    }
+
+    val habitat = reference.habitatRu.lowercase()
+
+    return when (forest) {
+        ForestType.CONIFEROUS -> listOf(
+            "хвойн", "соснов", "елов", "ельник"
+        ).any { it in habitat }
+
+        ForestType.DECIDUOUS -> listOf(
+            "лиственн", "берёз", "берез",
+            "осинов", "осинник", "дубов", "буков"
+        ).any { it in habitat }
+
+        ForestType.MIXED -> "смешанн" in habitat
+    }
+}
+
+
+private val dangerousMushroomIds = setOf(
+    26,    27,    75,    74,    73,    24,    79,    72
+)
+
+fun isDangerousMushroom(id: Int): Boolean {
+    return id in dangerousMushroomIds
+}
+
 
 @Composable
 fun GuideScreen(
@@ -68,6 +114,16 @@ fun GuideScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+
+
+    var selectedForest by remember {
+        mutableStateOf<ForestType?>(null)
+    }
+
+    val filteredSpecies = state.species.filter {
+        matchesForest(it, selectedForest)
+    }
+
 
     Scaffold(
         topBar = {
@@ -83,13 +139,29 @@ fun GuideScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
+
                 PanelFilter(
                     selectedCategories = state.selectedCategories,
                     onCategoryChange = { categoryName ->
-                        viewModel.processCommand(GuideCommand.CheckCategory(categoryName))
+                        selectedForest = null
+                        viewModel.processCommand(
+                            GuideCommand.CheckCategory(categoryName)
+                        )
                     }
                 )
+
+                if (
+                    state.selectedCategories.size == 1 &&
+                    FloraCategory.MUSHROOM.key in state.selectedCategories
+                ) {
+                    ForestFilter(
+                        selectedForest = selectedForest,
+                        onForestSelected = { selectedForest = it }
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(2.dp))
+
             }
         }
     ) { innerPadding ->
@@ -102,8 +174,24 @@ fun GuideScreen(
             }
         } else {
             LazyColumn(contentPadding = innerPadding) {
+
+                if (
+                    state.selectedCategories.isEmpty() ||
+                    FloraCategory.MUSHROOM.key in state.selectedCategories
+                ) {
+                    item {
+                        GuideSafetyNotice(
+                            modifier = Modifier.padding(
+                                horizontal = 24.dp,
+                                vertical = 10.dp
+                            )
+                        )
+                    }
+                }
+
+
                 item { Spacer(modifier = Modifier.height(5.dp)) }
-                items(items = state.species, key = { it.id }) { speciesItem ->
+                items(items = filteredSpecies, key = { it.id }) { speciesItem ->
                     GuideCard(
                         modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                         imageName = speciesItem.imageName,
@@ -246,6 +334,30 @@ fun GuideCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
+
+                if (isDangerousMushroom(reference.id)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = Color(0xFFFF9800),
+                            modifier = Modifier.size(14.dp)
+                        )
+
+                        Text(
+                            text = stringResource(R.string.dangerous_mushroom),
+                            color = Color(0xFFFF9800),
+                            fontSize = 12.sp,
+                            fontWeight = Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+
                 Text(
                     text = stringResource(
                         R.string.season,
@@ -338,3 +450,79 @@ fun PanelFilter(
             }
     }
 }
+
+
+@Composable
+private fun GuideSafetyNotice(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = Color(0xFFFF9800),
+                modifier = Modifier.size(18.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.safety_notice_title),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = Bold
+            )
+        }
+
+        Text(
+            text = stringResource(R.string.safety_notice_text),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+
+@Composable
+private fun ForestFilter(
+    selectedForest: ForestType?,
+    onForestSelected: (ForestType?) -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(
+            horizontal = 24.dp,
+            vertical = 2.dp
+        )
+    ) {
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val options = listOf(
+                null to R.string.forest_all,
+                ForestType.CONIFEROUS to R.string.forest_coniferous,
+                ForestType.DECIDUOUS to R.string.forest_deciduous,
+                ForestType.MIXED to R.string.forest_mixed
+            )
+
+            options.forEach { (forest, labelRes) ->
+                FilterChip(
+                    selected = selectedForest == forest,
+                    onClick = { onForestSelected(forest) },
+                    label = {
+                        Text(stringResource(labelRes))
+                    }
+                )
+            }
+        }
+    }
+}
+
