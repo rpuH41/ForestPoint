@@ -1,7 +1,6 @@
 package com.liulkovich.florapoint.presentation.screens.detail
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +47,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,16 +88,12 @@ fun DetailScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+
     val listState = rememberLazyListState()
-    val isScrolled by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
-        }
-    }
-    val topBarContainerColor by animateColorAsState(
-        targetValue = if (isScrolled) MaterialTheme.colorScheme.surface else Color.Transparent,
-        label = "topBarBackground"
-    )
+
+    val topBarContainerColor =
+        MaterialTheme.colorScheme.surface
+
 
     Scaffold(
 
@@ -152,10 +146,12 @@ fun DetailScreen(
                         )
                     }
                 },
+
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = topBarContainerColor
-                ),
-                modifier = Modifier.background(topBarContainerColor)
+                    containerColor = topBarContainerColor,
+                    scrolledContainerColor = topBarContainerColor
+                )
+
             )
         }
     ) { innerPadding ->

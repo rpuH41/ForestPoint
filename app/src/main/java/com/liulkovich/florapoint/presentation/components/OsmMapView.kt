@@ -53,6 +53,10 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LifecycleStartEffect
 
 @SuppressLint("LocalContextResourcesRead")
 @Composable
@@ -70,19 +74,50 @@ fun OsmMapView(
     currentWeather: CurrentWeather? = null,
     onMapClick: (GeoPoint) -> Unit
 ) {
+
     val context = LocalContext.current
     val pointTitleTemplate = stringResource(R.string.point_id)
     val mapView = remember { MapView(context) }
     val online by isOnline()
 
-    DisposableEffect(Unit) {
+    var isInitialized by remember { mutableStateOf(false) }
+    var locationOverlay by remember {
+        mutableStateOf<MyLocationNewOverlay?>(null)
+    }
+
+    val hasLocationPermission =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+    DisposableEffect(mapView) {
         onDispose {
             mapView.onDetach()
         }
     }
 
-    var isInitialized by remember { mutableStateOf(false) }
-    var locationOverlay by remember { mutableStateOf<MyLocationNewOverlay?>(null) }
+    LifecycleStartEffect(
+        mapView,
+        locationOverlay,
+        hasLocationPermission
+    ) {
+        mapView.onResume()
+
+        if (hasLocationPermission) {
+            locationOverlay?.enableMyLocation()
+        }
+
+        onStopOrDispose {
+            locationOverlay?.disableMyLocation()
+            mapView.onPause()
+        }
+    }
+
 
     Box(modifier = modifier) {
         AndroidView(
@@ -97,23 +132,44 @@ fun OsmMapView(
                     controller.setCenter(GeoPoint(53.133562, 25.141006))
                     controller.setZoom(13.0)
 
-                    val overlay = MyLocationNewOverlay(GpsMyLocationProvider(context), this)
-                    overlay.enableMyLocation()
-                    if (shouldFollowLocation) overlay.enableFollowLocation()
+
+                    val provider = GpsMyLocationProvider(context).apply {
+                        addLocationSource(
+                            android.location.LocationManager.NETWORK_PROVIDER
+                        )
+                    }
+                    val overlay = MyLocationNewOverlay(
+                        GpsMyLocationProvider(context),
+                        this
+                    )
+
+                    if (shouldFollowLocation && hasLocationPermission) {
+                        overlay.enableFollowLocation()
+                    }
+
                     overlays.add(overlay)
                     locationOverlay = overlay
 
                     onMapReady(this, overlay)
+
                 }
             },
             update = { mv ->
                 val overlay = locationOverlay ?: return@AndroidView
 
-                if (shouldFollowLocation && !overlay.isFollowLocationEnabled) {
+                if (
+                    shouldFollowLocation &&
+                    hasLocationPermission &&
+                    !overlay.isFollowLocationEnabled
+                ) {
                     overlay.enableFollowLocation()
-                } else if (!shouldFollowLocation && overlay.isFollowLocationEnabled) {
+                } else if (
+                    (!shouldFollowLocation || !hasLocationPermission) &&
+                    overlay.isFollowLocationEnabled
+                ) {
                     overlay.disableFollowLocation()
                 }
+
 
                 if (forceCenter != null) {
                     mv.controller.animateTo(forceCenter)

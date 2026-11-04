@@ -160,6 +160,12 @@ fun MapScreen(
     val sharedLocation by weatherViewModel.currentLocation.collectAsStateWithLifecycle()
     val online by isOnline()
 
+    LaunchedEffect(state.currentWeather) {
+        state.currentWeather?.let { weather ->
+            weatherViewModel.acceptWeatherFromMap(weather)
+        }
+    }
+
     LaunchedEffect(sharedLocation, online) {
         sharedLocation?.let { (lat, lon) ->
             viewModel.updateCurrentLocation(lat, lon)
