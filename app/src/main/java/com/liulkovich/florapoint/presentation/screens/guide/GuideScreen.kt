@@ -98,7 +98,7 @@ private fun matchesForest(
 
 
 private val dangerousMushroomIds = setOf(
-    26,    27,    75,    74,    73,    24,    79,    72
+    26,    27,    75,    74,    73,    79,    72
 )
 
 fun isDangerousMushroom(id: Int): Boolean {
