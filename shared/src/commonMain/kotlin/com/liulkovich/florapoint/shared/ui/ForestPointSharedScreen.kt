@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import com.liulkovich.florapoint.shared.domain.localizedName
 import com.liulkovich.florapoint.shared.ui.theme.ForestPointSharedTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.runtime.saveable.rememberSaveable
 
 
 @Composable
@@ -34,8 +35,12 @@ fun ForestPointSharedScreen(
     colorScheme: ColorScheme? = null
 ) {
 
-    var selectedCategory by remember {
-        mutableStateOf<SharedFloraCategory?>(null)
+    var selectedCategoryKey by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    val selectedCategory = selectedCategoryKey?.let {
+        SharedFloraCategory.fromKey(it)
     }
 
     ForestPointSharedTheme(colorScheme = colorScheme) {
@@ -67,7 +72,7 @@ fun ForestPointSharedScreen(
 
                             Card(
                                 onClick = {
-                                    selectedCategory = category
+                                    selectedCategoryKey = category.key
                                 },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
@@ -102,7 +107,7 @@ fun ForestPointSharedScreen(
 
                     TextButton(
                         onClick = {
-                            selectedCategory = null
+                            selectedCategoryKey = null
                         }
                     ) {
                         Text("← Назад к категориям")
