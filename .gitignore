@@ -7,7 +7,7 @@
 **/build/
 /captures
 .externalNativeBuild
-
+/.kotlin/
 .cxx
 app/florapoint
 /app/google-services.json
