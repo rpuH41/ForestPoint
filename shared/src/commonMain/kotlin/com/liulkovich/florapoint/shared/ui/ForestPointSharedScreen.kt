@@ -26,8 +26,9 @@ import androidx.compose.runtime.setValue
 import com.liulkovich.florapoint.shared.domain.localizedName
 import com.liulkovich.florapoint.shared.ui.theme.ForestPointSharedTheme
 import androidx.compose.material3.ColorScheme
+import com.liulkovich.florapoint.shared.ui.guide.GuideSearchBar
 import androidx.compose.runtime.saveable.rememberSaveable
-
+import com.liulkovich.florapoint.shared.ui.guide.GuideCategoryFilter
 
 @Composable
 fun ForestPointSharedScreen(
@@ -41,6 +42,12 @@ fun ForestPointSharedScreen(
 
     val selectedCategory = selectedCategoryKey?.let {
         SharedFloraCategory.fromKey(it)
+    }
+    var searchQuery by rememberSaveable {
+        mutableStateOf("")
+    }
+    var selectedCategories by remember {
+        mutableStateOf<Set<String>>(emptySet())
     }
 
     ForestPointSharedTheme(colorScheme = colorScheme) {
@@ -60,6 +67,24 @@ fun ForestPointSharedScreen(
                     modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
                 )
 
+                GuideSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+
+                GuideCategoryFilter(
+                    selectedCategories = selectedCategories,
+                    onCategoryChange = { categoryKey ->
+                        selectedCategories =
+                            if (categoryKey in selectedCategories) {
+                                selectedCategories - categoryKey
+                            } else {
+                                selectedCategories + categoryKey
+                            }
+                    }
+                )
 
                 if (selectedCategory == null) {
                     LazyColumn(
@@ -99,7 +124,7 @@ fun ForestPointSharedScreen(
                         }
                     }
                 } else {
-                    val category = selectedCategory!!
+                    val category = selectedCategory
 
                     val filteredSpecies = species.filter {
                         it.category == category.key
