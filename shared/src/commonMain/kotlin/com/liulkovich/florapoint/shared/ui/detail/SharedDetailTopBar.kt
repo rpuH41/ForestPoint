@@ -22,6 +22,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.statusBars
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.back
+import com.liulkovich.florapoint.shared.generated.resources.notifications
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,9 +34,7 @@ fun SharedDetailTopBar(
     title: String,
     isNotificationEnabled: Boolean,
     onBack: () -> Unit,
-    onNotificationToggle: (Boolean) -> Unit,
-    backDescription: String = "Назад",
-    notificationDescription: String = "Уведомления"
+    onNotificationToggle: (Boolean) -> Unit
 ) {
     val containerColor = MaterialTheme.colorScheme.surface
 
@@ -54,7 +57,7 @@ fun SharedDetailTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = backDescription
+                    contentDescription = stringResource(Res.string.back)
                 )
             }
         },
@@ -66,7 +69,7 @@ fun SharedDetailTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
-                    contentDescription = notificationDescription,
+                    contentDescription = stringResource(Res.string.notifications),
                     tint = if (isNotificationEnabled) {
                         Color(0xFF66BB6A)
                     } else {

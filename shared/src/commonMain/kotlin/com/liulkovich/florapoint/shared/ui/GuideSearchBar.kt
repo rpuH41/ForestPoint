@@ -19,16 +19,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.enter_a_name
+import com.liulkovich.florapoint.shared.generated.resources.search
+import com.liulkovich.florapoint.shared.generated.resources.clear
 
 @Composable
 fun GuideSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Введите название",
-    searchDescription: String = "Поиск",
-    clearDescription: String = "Очистить"
+    placeholder: String? = null,
+    searchDescription: String? = null,
+    clearDescription: String? = null
 ) {
+    val placeholderText =
+        placeholder ?: stringResource(Res.string.enter_a_name)
+
+    val searchText =
+        searchDescription ?: stringResource(Res.string.search)
+
+    val clearText =
+        clearDescription ?: stringResource(Res.string.clear)
+
     TextField(
         modifier = modifier
             .fillMaxWidth()
@@ -42,7 +57,7 @@ fun GuideSearchBar(
         onValueChange = onQueryChange,
         placeholder = {
             Text(
-                text = placeholder,
+                text = placeholderText,
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -56,7 +71,7 @@ fun GuideSearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = searchDescription,
+                contentDescription = searchText,
                 tint = MaterialTheme.colorScheme.onSurface
             )
         },
@@ -65,7 +80,7 @@ fun GuideSearchBar(
                 IconButton(onClick = { onQueryChange("") }) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = clearDescription,
+                        contentDescription = clearText,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

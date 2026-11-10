@@ -43,6 +43,11 @@ import com.liulkovich.florapoint.shared.ui.guide.SharedGuideScreen
 import com.liulkovich.florapoint.shared.ui.theme.ForestPointSharedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.Locale
+import androidx.appcompat.app.AppCompatDelegate
+import android.content.res.Configuration
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalConfiguration
 
 @AndroidEntryPoint
 class SharedPreviewActivity : ComponentActivity() {
@@ -54,6 +59,24 @@ class SharedPreviewActivity : ComponentActivity() {
 
         setContent {
             val context = LocalContext.current
+            val applicationLocales =
+                AppCompatDelegate.getApplicationLocales()
+
+            val language = if (!applicationLocales.isEmpty) {
+                applicationLocales[0]?.language ?: "ru"
+            } else {
+                if (Locale.getDefault().language == "ru") {
+                    "ru"
+                } else {
+                    "en"
+                }
+            }
+
+            val localizedConfiguration = remember(context, language) {
+                Configuration(context.resources.configuration).apply {
+                    setLocale(Locale.forLanguageTag(language))
+                }
+            }
             val darkTheme = isSystemInDarkTheme()
 
             val androidColorScheme =
@@ -73,7 +96,9 @@ class SharedPreviewActivity : ComponentActivity() {
                 SnackbarHostState()
             }
             val scope = rememberCoroutineScope()
-
+            CompositionLocalProvider(
+                LocalConfiguration provides localizedConfiguration
+            ) {
             ForestPointSharedTheme(
                 colorScheme = androidColorScheme
             ) {
@@ -114,6 +139,7 @@ class SharedPreviewActivity : ComponentActivity() {
                             ) {
                                 SharedGuideScreen(
                                     state = sharedState,
+                                    language = language,
                                     onCommand = { command ->
                                         guideViewModel.processCommand(
                                             command.toAndroidCommand()
@@ -173,6 +199,7 @@ class SharedPreviewActivity : ComponentActivity() {
 
                         SharedDetailScreen(
                             state = detailState.toSharedDetailState(),
+                            language = language,
                             onBack = {
                                 navController.popBackStack()
                             },
@@ -207,6 +234,8 @@ class SharedPreviewActivity : ComponentActivity() {
                     }
                 }
             }
+
+        }
         }
     }
 }

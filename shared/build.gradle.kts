@@ -13,6 +13,8 @@ kotlin {
         compileSdk = 36
         minSdk = 24
 
+        androidResources.enable = true
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -26,6 +28,11 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.runtimeSaveable)
             implementation(libs.navigation.compose)
+            implementation(compose.components.resources)
         }
     }
+}
+compose.resources {
+    packageOfResClass =
+        "com.liulkovich.florapoint.shared.generated.resources"
 }

@@ -13,7 +13,13 @@ import com.liulkovich.florapoint.shared.domain.ReferenceModel
 import com.liulkovich.florapoint.shared.domain.localizedDescription
 import com.liulkovich.florapoint.shared.domain.localizedDifferences
 import com.liulkovich.florapoint.shared.domain.localizedHabitat
-import com.liulkovich.florapoint.shared.domain.seasonText
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.what_is_the_habitat_of
+import com.liulkovich.florapoint.shared.generated.resources.description
+import com.liulkovich.florapoint.shared.generated.resources.differences_from_original
+import com.liulkovich.florapoint.shared.generated.resources.harvest_period
 
 @Composable
 fun SharedDetailInfoSection(
@@ -33,14 +39,14 @@ fun SharedDetailInfoSection(
     ) {
         SharedDetailInfoBlock(
             icon = Icons.Default.LocationOn,
-            title = if (language == "en") "Where it grows" else "Где растёт",
+            title = stringResource(Res.string.what_is_the_habitat_of),
             text = reference.localizedHabitat(language),
             isHighlighted = isHighlighted
         )
 
         SharedDetailInfoBlock(
             icon = Icons.Default.Info,
-            title = if (language == "en") "Description" else "Описание",
+            title = stringResource(Res.string.description),
             text = reference.localizedDescription(language),
             isHighlighted = isHighlighted
         )
@@ -48,14 +54,13 @@ fun SharedDetailInfoSection(
         SharedLookAlikesBlock(
             resolvedLookAlikes = resolvedLookAlikes,
             isHighlighted = isHighlighted,
-            onSpeciesClick = onSpeciesClick,
-            language = language
+            onSpeciesClick = onSpeciesClick
         )
 
         if (!reference.differencesRu.isNullOrBlank()) {
             SharedDetailInfoBlock(
                 icon = Icons.Default.Info,
-                title = if (language == "en") "Differences" else "Чем отличается",
+                title = stringResource(Res.string.differences_from_original),
                 text = reference.localizedDifferences(language),
                 isHighlighted = isHighlighted
             )
@@ -63,8 +68,11 @@ fun SharedDetailInfoSection(
 
         SharedDetailInfoBlock(
             icon = Icons.Default.DateRange,
-            title = if (language == "en") "Harvest period" else "Период сбора",
-            text = reference.seasonText(language),
+            title = stringResource(Res.string.harvest_period),
+            text = sharedDetailSeasonText(
+                startMonth = reference.startMonth,
+                endMonth = reference.endMonth
+            ),
             isHighlighted = isHighlighted
         )
     }

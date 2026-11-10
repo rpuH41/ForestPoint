@@ -18,16 +18,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.safety_notice_title
+import com.liulkovich.florapoint.shared.generated.resources.safety_notice_text
 
 @Composable
 fun SharedGuideSafetyNotice(
     modifier: Modifier = Modifier,
-    title: String = "Внимание!",
-    message: String =
-        "Отсутствие значка «Опасный гриб» не гарантирует " +
-                "безопасность гриба. Не определяйте съедобность " +
-                "грибов по приложению."
 ) {
+    val title = stringResource(
+        Res.string.safety_notice_title
+    )
+
+    val message = stringResource(
+        Res.string.safety_notice_text
+    )
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dp)

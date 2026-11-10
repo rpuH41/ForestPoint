@@ -19,7 +19,6 @@ import com.liulkovich.florapoint.shared.domain.SharedGuideCommand
 import com.liulkovich.florapoint.shared.domain.SharedGuideScreenState
 import com.liulkovich.florapoint.shared.domain.localizedName
 import com.liulkovich.florapoint.shared.domain.isDangerousMushroom
-import com.liulkovich.florapoint.shared.domain.seasonText
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -77,7 +76,8 @@ fun SharedGuideScreen(
                 selectedForest = selectedForest,
                 onForestSelected = { forest ->
                     selectedForestName = forest?.name
-                }
+                },
+                language = language
             )
         }
 
@@ -110,7 +110,10 @@ fun SharedGuideScreen(
                     SharedGuideCard(
                         reference = reference,
                         language = language,
-                        seasonText = reference.seasonText(language),
+                        seasonText = sharedGuideSeasonText(
+                            startMonth = reference.startMonth,
+                            endMonth = reference.endMonth
+                        ),
                         dangerous = reference.isDangerousMushroom(),
                         onNotificationChange = { enabled ->
                             onCommand(

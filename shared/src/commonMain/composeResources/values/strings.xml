@@ -1,0 +1,65 @@
+
+<resources>
+    <string name="forest_all">Все</string>
+    <string name="forest_coniferous">🌲 Хвойный</string>
+    <string name="forest_deciduous">🌳 Лиственный</string>
+    <string name="forest_mixed">🌲🌳 Смешанный</string>
+
+    <string name="safety_notice_title">Внимание!</string>
+    <string name="safety_notice_text">Отсутствие значка «Опасный гриб» не гарантирует безопасность гриба. Не определяйте съедобность грибов по приложению.</string>
+
+    <string name="back">Назад</string>
+    <string name="notifications">Уведомления</string>
+    <string name="turn_off_notifications">Отключить уведомления</string>
+    <string name="turn_on_notifications">Включить уведомления</string>
+    <string name="what_is_the_habitat_of">Где растёт</string>
+    <string name="description">Описание</string>
+    <string name="similar_species">Похожие виды</string>
+    <string name="differences_from_original">Чем отличается</string>
+    <string name="harvest_period">Период сбора</string>
+    <string name="dangerous_mushroom">Опасный гриб</string>
+
+    <string name="mushrooms">Грибы</string>
+    <string name="berries">Ягоды</string>
+    <string name="plants">Растения</string>
+    <string name="nuts">Орехи</string>
+    <string name="enter_a_name">Введите название...</string>
+    <string name="search">Поиск</string>
+    <string name="clear">Очистить</string>
+    <string name="home">Главная</string>
+    <string name="map">Карта</string>
+    <string name="guide">Справочник</string>
+    <string name="settings">Настройки</string>
+
+    <string name="from_to">С %1$s по %2$s</string>
+
+    <string name="from_january">января</string>
+    <string name="from_february">февраля</string>
+    <string name="from_march">марта</string>
+    <string name="from_april">апреля</string>
+    <string name="from_may">мая</string>
+    <string name="from_june">июня</string>
+    <string name="from_july">июля</string>
+    <string name="from_august">августа</string>
+    <string name="from_september">сентября</string>
+    <string name="from_october">октября</string>
+    <string name="from_november">ноября</string>
+    <string name="from_december">декабря</string>
+
+    <string name="january">январь</string>
+    <string name="february">февраль</string>
+    <string name="march">март</string>
+    <string name="april">апрель</string>
+    <string name="may">май</string>
+    <string name="june">июнь</string>
+    <string name="july">июль</string>
+    <string name="august">август</string>
+    <string name="september">сентябрь</string>
+    <string name="october">октябрь</string>
+    <string name="november">ноябрь</string>
+    <string name="december">декабрь</string>
+
+    <string name="detail_season_not_specified">Период не указан</string>
+    <string name="season">Сезон: %1$s — %2$s</string>
+
+</resources>

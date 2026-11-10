@@ -28,6 +28,11 @@ import androidx.compose.ui.unit.dp
 import com.liulkovich.florapoint.shared.domain.SharedDetailScreenState
 import com.liulkovich.florapoint.shared.domain.isDangerousMushroom
 import com.liulkovich.florapoint.shared.domain.localizedName
+import org.jetbrains.compose.resources.stringResource
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.dangerous_mushroom
+import com.liulkovich.florapoint.shared.generated.resources.turn_on_notifications
+import com.liulkovich.florapoint.shared.generated.resources.turn_off_notifications
 
 @Composable
 fun SharedDetailScreen(
@@ -48,13 +53,7 @@ fun SharedDetailScreen(
                 title = species?.localizedName(language) ?: "",
                 isNotificationEnabled = state.isNotificationEnabled,
                 onBack = onBack,
-                onNotificationToggle = onNotificationToggle,
-                backDescription = if (language == "en") "Back" else "Назад",
-                notificationDescription = if (language == "en") {
-                    "Notifications"
-                } else {
-                    "Уведомления"
-                }
+                onNotificationToggle = onNotificationToggle
             )
         }
     ) { innerPadding ->
@@ -94,11 +93,7 @@ fun SharedDetailScreen(
                                 )
 
                                 Text(
-                                    text = if (language == "en") {
-                                        "Dangerous mushroom"
-                                    } else {
-                                        "Опасный гриб"
-                                    },
+                                    text = stringResource(Res.string.dangerous_mushroom),
                                     color = Color(0xFFFF9800),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
@@ -145,17 +140,9 @@ fun SharedDetailScreen(
                     ) {
                         Text(
                             text = if (state.isNotificationEnabled) {
-                                if (language == "en") {
-                                    "Turn off notifications"
-                                } else {
-                                    "Выключить уведомления"
-                                }
+                                stringResource(Res.string.turn_off_notifications)
                             } else {
-                                if (language == "en") {
-                                    "Turn on notifications"
-                                } else {
-                                    "Включить уведомления"
-                                }
+                                stringResource(Res.string.turn_on_notifications)
                             }
                         )
                     }

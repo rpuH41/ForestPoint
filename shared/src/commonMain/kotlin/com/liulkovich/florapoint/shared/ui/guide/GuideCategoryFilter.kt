@@ -15,7 +15,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.liulkovich.florapoint.shared.domain.SharedFloraCategory
-import com.liulkovich.florapoint.shared.domain.localizedName
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.mushrooms
+import com.liulkovich.florapoint.shared.generated.resources.berries
+import com.liulkovich.florapoint.shared.generated.resources.plants
+import com.liulkovich.florapoint.shared.generated.resources.nuts
+
 
 @Composable
 fun GuideCategoryFilter(
@@ -50,8 +57,24 @@ fun GuideCategoryFilter(
                                 textAlign = TextAlign.Center
                             )
                         } else {
+                            val categoryName = when (category) {
+                                SharedFloraCategory.MUSHROOM ->
+                                    stringResource(Res.string.mushrooms)
+
+                                SharedFloraCategory.BERRY ->
+                                    stringResource(Res.string.berries)
+
+                                SharedFloraCategory.PLANT ->
+                                    stringResource(Res.string.plants)
+
+                                SharedFloraCategory.NUT ->
+                                    stringResource(Res.string.nuts)
+
+                                SharedFloraCategory.OTHER -> ""
+                            }
+
                             Text(
-                                text = "${category.emoji} ${category.localizedName("ru")}",
+                                text = "${category.emoji} $categoryName",
                                 style = MaterialTheme.typography.labelSmall,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis

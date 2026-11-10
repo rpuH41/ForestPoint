@@ -27,14 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.similar_species
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SharedLookAlikesBlock(
     resolvedLookAlikes: Map<String, Int?>,
     isHighlighted: Boolean,
-    onSpeciesClick: (Int) -> Unit,
-    language: String = "ru"
+    onSpeciesClick: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -65,11 +68,7 @@ fun SharedLookAlikesBlock(
 
             Column {
                 Text(
-                    text = if (language == "en") {
-                        "Similar species"
-                    } else {
-                        "Похожие виды"
-                    },
+                    text = stringResource(Res.string.similar_species),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleSmall
                 )

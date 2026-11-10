@@ -24,6 +24,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.liulkovich.florapoint.shared.ui.theme.ForestDarkGreen
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.home
+import com.liulkovich.florapoint.shared.generated.resources.map
+import com.liulkovich.florapoint.shared.generated.resources.guide
+import com.liulkovich.florapoint.shared.generated.resources.settings
 
 data class ForestPointNavItem(
     val label: String,
@@ -39,10 +46,26 @@ fun ForestPointBottomBar(
     compact: Boolean = false
 ) {
     val items = listOf(
-        ForestPointNavItem("Главная", Icons.Default.Home, "Home"),
-        ForestPointNavItem("Карта", Icons.Default.LocationOn, "Map"),
-        ForestPointNavItem("Справочник", Icons.AutoMirrored.Filled.List, "Guide"),
-        ForestPointNavItem("Настройки", Icons.Default.Settings, "Settings")
+        ForestPointNavItem(
+            label = stringResource(Res.string.home),
+            icon = Icons.Default.Home,
+            route = "Home"
+        ),
+        ForestPointNavItem(
+            label = stringResource(Res.string.map),
+            icon = Icons.Default.LocationOn,
+            route = "Map"
+        ),
+        ForestPointNavItem(
+            label = stringResource(Res.string.guide),
+            icon = Icons.AutoMirrored.Filled.List,
+            route = "Guide"
+        ),
+        ForestPointNavItem(
+            label = stringResource(Res.string.settings),
+            icon = Icons.Default.Settings,
+            route = "Settings"
+        )
     )
 
     val barHeight = if (compact) 64.dp else 100.dp

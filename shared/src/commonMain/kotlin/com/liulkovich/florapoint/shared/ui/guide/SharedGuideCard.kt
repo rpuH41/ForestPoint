@@ -29,6 +29,10 @@ import com.liulkovich.florapoint.shared.domain.ReferenceModel
 import com.liulkovich.florapoint.shared.domain.localizedName
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import org.jetbrains.compose.resources.stringResource
+
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.dangerous_mushroom
 
 @Composable
 fun SharedGuideCard(
@@ -89,7 +93,7 @@ fun SharedGuideCard(
                         )
 
                         Text(
-                            text = "Опасный гриб",
+                            text = stringResource(Res.string.dangerous_mushroom),
                             color = Color(0xFFFF9800),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold

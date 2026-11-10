@@ -1,0 +1,65 @@
+
+<resources>
+    <string name="forest_all">All</string>
+    <string name="forest_coniferous">🌲 Coniferous</string>
+    <string name="forest_deciduous">🌳 Deciduous</string>
+    <string name="forest_mixed">🌲🌳 Mixed</string>
+
+    <string name="safety_notice_title">Warning!</string>
+    <string name="safety_notice_text">The absence of a "Dangerous mushroom" label does not guarantee that a mushroom is safe. Do not use this app to determine whether mushrooms are edible.</string>
+
+    <string name="back">Back</string>
+    <string name="notifications">Notifications</string>
+    <string name="turn_off_notifications">Turn off notifications</string>
+    <string name="turn_on_notifications">Turn on notifications</string>
+    <string name="what_is_the_habitat_of">What is the habitat of</string>
+    <string name="description">Description</string>
+    <string name="similar_species">Similar species</string>
+    <string name="differences_from_original">Key differences</string>
+    <string name="harvest_period">Harvest period</string>
+    <string name="dangerous_mushroom">Dangerous mushroom</string>
+
+    <string name="mushrooms">Mushrooms</string>
+    <string name="berries">Berries</string>
+    <string name="plants">Plants</string>
+    <string name="nuts">Nuts</string>
+    <string name="enter_a_name">Enter a name...</string>
+    <string name="search">Search</string>
+    <string name="clear">Clear</string>
+    <string name="home">Home</string>
+    <string name="map">Map</string>
+    <string name="guide">Guide</string>
+    <string name="settings">Settings</string>
+
+    <string name="from_to">From %1$s to %2$s</string>
+
+    <string name="from_january">January</string>
+    <string name="from_february">February</string>
+    <string name="from_march">March</string>
+    <string name="from_april">April</string>
+    <string name="from_may">May</string>
+    <string name="from_june">June</string>
+    <string name="from_july">July</string>
+    <string name="from_august">August</string>
+    <string name="from_september">September</string>
+    <string name="from_october">October</string>
+    <string name="from_november">November</string>
+    <string name="from_december">December</string>
+
+    <string name="january">January</string>
+    <string name="february">February</string>
+    <string name="march">March</string>
+    <string name="april">April</string>
+    <string name="may">May</string>
+    <string name="june">June</string>
+    <string name="july">July</string>
+    <string name="august">August</string>
+    <string name="september">September</string>
+    <string name="october">October</string>
+    <string name="november">November</string>
+    <string name="december">December</string>
+
+    <string name="detail_season_not_specified">Season not specified</string>
+    <string name="season">Season: %1$s — %2$s</string>
+
+</resources>
