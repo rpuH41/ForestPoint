@@ -156,10 +156,8 @@ class SharedPreviewActivity : ComponentActivity() {
                                         }
                                     },
                                     onForecastClick = {
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar(
-                                                "Тест кнопки прогноза 🍄"
-                                            )
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
                                         }
                                     }
                                 )
@@ -328,10 +326,8 @@ class SharedPreviewActivity : ComponentActivity() {
                                     },
 
                                     onForecastClick = {
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar(
-                                                "Тест кнопки прогноза 🍄"
-                                            )
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
                                         }
                                     }
                                 )
@@ -385,6 +381,76 @@ class SharedPreviewActivity : ComponentActivity() {
                             }
                         }
                     }
+
+
+                    composable("Forecast") {
+                        Scaffold(
+                            snackbarHost = {
+                                SnackbarHost(snackbarHostState)
+                            },
+                            bottomBar = {
+                                ForestPointBottomBar(
+                                    currentRoute = "Forecast",
+                                    onNavigate = { route ->
+                                        when (route) {
+                                            "Home" -> {
+                                                val returned = navController.popBackStack(
+                                                    route = "Home",
+                                                    inclusive = false
+                                                )
+
+                                                if (!returned) {
+                                                    navController.navigate("Home") {
+                                                        launchSingleTop = true
+                                                    }
+                                                }
+                                            }
+
+                                            "Guide" -> {
+                                                navController.navigate("Guide") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
+
+                                            "Forecast" -> Unit
+
+                                            else -> {
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar(
+                                                        "Тест перехода: $route"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    },
+                                    onForecastClick = {
+                                        // Уже на экране прогноза
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            Box(
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                SharedForecastPreview(
+                                    language = language,
+                                    onClickDetail = { speciesId ->
+                                        navController.navigate(
+                                            "Detail/$speciesId"
+                                        )
+                                    },
+                                    onLocationClick = { pointId ->
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                "Тест перехода к точке: $pointId"
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+
 
                     composable(
                         route = "Detail/{speciesId}",

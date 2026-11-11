@@ -69,5 +69,21 @@
     <string name="tip">Совет</string>
     <string name="reference">Справочники</string>
     <string name="open_map">Открыть карту</string>
+    <string name="forecast_excellent">Отличные условия</string>
+    <string name="forecast_good">Хорошие условия</string>
+    <string name="forecast_weak">Слабая вероятность</string>
+
+    <string name="forecast_title">Прогноз</string>
+    <string name="forecast_subtitle">Какие виды можно найти сейчас, судя по погоде</string>
+    <string name="weather_now">Сейчас:</string>
+    <string name="weather_last_5days">За 5 дней:</string>
+    <string name="no_weather_data">Нет данных о погоде</string>
+    <string name="no_suitable_species">Сейчас нет подходящих видов</string>
+    <string name="forecast_analyzing_social_data">Анализируем соцсети…</string>
+    <string name="social_no_internet_title">Нет подключения к интернету</string>
+    <string name="social_no_internet_message">Не удалось получить свежие грибные данные. Проверьте подключение к интернету.</string>
+    <string name="social_service_error_title">Не удалось обновить прогноз</string>
+    <string name="social_service_error_message">Сервис временно недоступен. Попробуйте ещё раз позже.</string>
+
 
 </resources>
