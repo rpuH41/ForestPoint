@@ -83,5 +83,28 @@
     <string name="social_no_internet_message">Unable to get fresh mushroom data. Check your internet connection.</string>
     <string name="social_service_error_title">Unable to update forecast</string>
     <string name="social_service_error_message">The service is temporarily unavailable. Please try again later.</string>
+    <string name="map_layers_description">Map layers</string>
+    <string name="map_provider_osm">OpenStreetMap</string>
+    <string name="map_provider_google">Google Maps</string>
+    <string name="google_map_layer_normal">Normal</string>
+    <string name="google_map_layer_satellite">Satellite</string>
+    <string name="google_map_layer_hybrid">Hybrid</string>
+    <string name="google_map_layer_terrain">Terrain</string>
+    <string name="map_layer_selected">✓ %1$s</string>
+    <string name="weather_on_date">Weather for:</string>
+    <string name="weather_5days_before">5-day avg before:</string>
+    <string name="loadingl_eather">🌤️ Loading weather...</string>
+    <string name="delete_this_point">Delete this point?</string>
+    <string name="this_action_cannot_be_undone">This action cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="search_places">Search places...</string>
+    <string name="map_center_on_me">My location</string>
+    <string name="map_zoom_in">Zoom in</string>
+    <string name="map_zoom_out">Zoom out</string>
+    <string name="place">Place</string>
+    <string name="add_place">Add</string>
+    <string name="filter_my_points">My</string>
+    <string name="filter_all_points">All</string>
 
 </resources>

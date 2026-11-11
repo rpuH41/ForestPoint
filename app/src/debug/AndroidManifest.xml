@@ -3,6 +3,7 @@
     <application>
         <activity
             android:name="com.liulkovich.florapoint.SharedPreviewActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true" />
     </application>
 </manifest>

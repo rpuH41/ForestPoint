@@ -82,8 +82,13 @@ class SharedPreviewActivity : ComponentActivity() {
                 }
             }
 
-            val localizedConfiguration = remember(context, language) {
-                Configuration(context.resources.configuration).apply {
+            val systemConfiguration = LocalConfiguration.current
+
+            val localizedConfiguration = remember(
+                systemConfiguration,
+                language
+            ) {
+                Configuration(systemConfiguration).apply {
                     setLocale(Locale.forLanguageTag(language))
                 }
             }
@@ -145,7 +150,11 @@ class SharedPreviewActivity : ComponentActivity() {
                                             }
 
                                             "Home" -> Unit
-
+                                            "Map" -> {
+                                                navController.navigate("Map") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
                                             else -> {
                                                 scope.launch {
                                                     snackbarHostState.showSnackbar(
@@ -174,10 +183,8 @@ class SharedPreviewActivity : ComponentActivity() {
                                 },
 
                                 onClickMap = {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            "Тест перехода: Map"
-                                        )
+                                    navController.navigate("Map") {
+                                        launchSingleTop = true
                                     }
                                 },
 
@@ -315,6 +322,11 @@ class SharedPreviewActivity : ComponentActivity() {
 
                                             "Guide" -> Unit
 
+                                            "Map" -> {
+                                                navController.navigate("Map") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
                                             else -> {
                                                 scope.launch {
                                                     snackbarHostState.showSnackbar(
@@ -383,6 +395,64 @@ class SharedPreviewActivity : ComponentActivity() {
                     }
 
 
+                    composable("Map") {
+                        Scaffold(
+                            snackbarHost = {
+                                SnackbarHost(snackbarHostState)
+                            },
+                            bottomBar = {
+                                ForestPointBottomBar(
+                                    currentRoute = "Map",
+
+                                    onNavigate = { route ->
+                                        when (route) {
+                                            "Home" -> {
+                                                val returned = navController.popBackStack(
+                                                    route = "Home",
+                                                    inclusive = false
+                                                )
+
+                                                if (!returned) {
+                                                    navController.navigate("Home") {
+                                                        launchSingleTop = true
+                                                    }
+                                                }
+                                            }
+
+                                            "Guide" -> {
+                                                navController.navigate("Guide") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
+
+                                            "Map" -> Unit
+
+                                            else -> {
+                                                scope.launch {
+                                                    snackbarHostState.showSnackbar(
+                                                        "Тест перехода: $route"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    },
+
+                                    onForecastClick = {
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            Box(
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                SharedMapWithPointsPreview()
+                            }
+                        }
+                    }
+
                     composable("Forecast") {
                         Scaffold(
                             snackbarHost = {
@@ -413,6 +483,12 @@ class SharedPreviewActivity : ComponentActivity() {
                                             }
 
                                             "Forecast" -> Unit
+
+                                            "Map" -> {
+                                                navController.navigate("Map") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
 
                                             else -> {
                                                 scope.launch {
