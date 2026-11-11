@@ -61,5 +61,13 @@
 
     <string name="detail_season_not_specified">Период не указан</string>
     <string name="season">Сезон: %1$s — %2$s</string>
+    <string name="season_now">Сезон сейчас</string>
+    <string name="no_active_seasons">Нет активных сезонов</string>
+    <string name="days_left">Осталось ~%1$d дней</string>
+    <string name="all_seasons">Все</string>
+
+    <string name="tip">Совет</string>
+    <string name="reference">Справочники</string>
+    <string name="open_map">Открыть карту</string>
 
 </resources>

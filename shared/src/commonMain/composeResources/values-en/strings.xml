@@ -61,5 +61,11 @@
 
     <string name="detail_season_not_specified">Season not specified</string>
     <string name="season">Season: %1$s — %2$s</string>
-
+    <string name="season_now">Season Now</string>
+    <string name="no_active_seasons">No active seasons</string>
+    <string name="days_left">~%1$d days left</string>
+    <string name="all_seasons">All</string>
+    <string name="tip">Tip</string>
+    <string name="reference">Guide</string>
+    <string name="open_map">Open map</string>
 </resources>
