@@ -18,6 +18,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.liulkovich.florapoint.presentation.screens.settings.SettingsViewModel
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +58,10 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import com.liulkovich.florapoint.presentation.screens.guide.GuideCommand
+import com.liulkovich.florapoint.presentation.screens.settings.DownloadAreaScreen
+import android.content.ContextWrapper
+import android.content.res.Resources
+import androidx.compose.runtime.key
 
 @AndroidEntryPoint
 class SharedPreviewActivity : ComponentActivity() {
@@ -64,34 +70,81 @@ class SharedPreviewActivity : ComponentActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
 
+    private val settingsViewModel: SettingsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val context = LocalContext.current
-            val applicationLocales =
-                AppCompatDelegate.getApplicationLocales()
 
-            val language = if (!applicationLocales.isEmpty) {
-                applicationLocales[0]?.language ?: "ru"
-            } else {
-                if (Locale.getDefault().language == "ru") {
+            val context = LocalContext.current
+
+// Следим за языком из SettingsViewModel.
+            val selectedLanguageTag by settingsViewModel
+                .currentLanguage
+                .collectAsStateWithLifecycle()
+
+// Актуальная конфигурация устройства.
+            val systemConfiguration = LocalConfiguration.current
+
+            val systemLanguage =
+                android.content.res.Resources.getSystem()
+                    .configuration
+                    .locales[0]
+                    ?.language ?: "en"
+
+// Язык, который должен использовать KMP-интерфейс.
+            val language = when (selectedLanguageTag) {
+                "ru" -> "ru"
+                "en" -> "en"
+
+                // Пустая строка означает системный язык.
+                else -> if (systemLanguage == "ru") {
                     "ru"
                 } else {
                     "en"
                 }
             }
 
-            val systemConfiguration = LocalConfiguration.current
+// Обновляется сразу после смены языка.
+
+            val selectedLocale = remember(language) {
+                Locale.forLanguageTag(language)
+            }
+
+// Compose Multiplatform использует текущую JVM-локаль
+// при выборе перевода из composeResources.
+// Это решение пока применяется только в debug-превью.
+            Locale.setDefault(selectedLocale)
 
             val localizedConfiguration = remember(
                 systemConfiguration,
                 language
             ) {
                 Configuration(systemConfiguration).apply {
-                    setLocale(Locale.forLanguageTag(language))
+                    setLocale(selectedLocale)
                 }
             }
+
+// Создаём ресурсы Android для выбранного языка,
+// но сохраняем исходный Activity Context как базовый.
+// Это важно для startActivity и других Android-действий.
+            val localizedContext = remember(
+                context,
+                localizedConfiguration
+            ) {
+                val resourcesContext =
+                    context.createConfigurationContext(
+                        localizedConfiguration
+                    )
+
+                object : ContextWrapper(context) {
+                    override fun getResources(): Resources =
+                        resourcesContext.resources
+                }
+            }
+
+
             val darkTheme = isSystemInDarkTheme()
 
             val androidColorScheme =
@@ -112,11 +165,13 @@ class SharedPreviewActivity : ComponentActivity() {
             }
             val scope = rememberCoroutineScope()
             CompositionLocalProvider(
+                LocalContext provides localizedContext,
                 LocalConfiguration provides localizedConfiguration
             ) {
-            ForestPointSharedTheme(
-                colorScheme = androidColorScheme
-            ) {
+                key(language) {
+                    ForestPointSharedTheme(
+                        colorScheme = androidColorScheme
+                    ) {
                 NavHost(
                     navController = navController,
                     startDestination = "Home"
@@ -155,6 +210,13 @@ class SharedPreviewActivity : ComponentActivity() {
                                                     launchSingleTop = true
                                                 }
                                             }
+
+                                            "Settings" -> {
+                                                navController.navigate("Settings") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
+
                                             else -> {
                                                 scope.launch {
                                                     snackbarHostState.showSnackbar(
@@ -327,6 +389,13 @@ class SharedPreviewActivity : ComponentActivity() {
                                                     launchSingleTop = true
                                                 }
                                             }
+
+                                            "Settings" -> {
+                                                navController.navigate("Settings") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
+
                                             else -> {
                                                 scope.launch {
                                                     snackbarHostState.showSnackbar(
@@ -426,6 +495,11 @@ class SharedPreviewActivity : ComponentActivity() {
                                             }
 
                                             "Map" -> Unit
+                                            "Settings" -> {
+                                                navController.navigate("Settings") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
 
                                             else -> {
                                                 scope.launch {
@@ -486,6 +560,12 @@ class SharedPreviewActivity : ComponentActivity() {
 
                                             "Map" -> {
                                                 navController.navigate("Map") {
+                                                    launchSingleTop = true
+                                                }
+                                            }
+
+                                            "Settings" -> {
+                                                navController.navigate("Settings") {
                                                     launchSingleTop = true
                                                 }
                                             }
@@ -577,6 +657,153 @@ class SharedPreviewActivity : ComponentActivity() {
                             }
                         )
                     }
+
+
+                    composable("Settings") {
+                        Scaffold(
+                            bottomBar = {
+                                ForestPointBottomBar(
+                                    currentRoute = "Settings",
+                                    onNavigate = { route ->
+                                        if (route != "Settings") {
+                                            navController.navigate(route) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    },
+                                    onForecastClick = {
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            SharedSettingsPreview(
+                                modifier = Modifier.padding(innerPadding),
+
+                                viewModel = settingsViewModel,
+
+                                onNavigateToNotifications = {
+                                    navController.navigate("Notifications")
+                                },
+
+                                onNavigateToOfflineRegions = {
+                                    navController.navigate("OfflineRegions")
+                                }
+                            )
+                        }
+                    }
+
+
+                    composable("Notifications") {
+                        Scaffold(
+                            bottomBar = {
+                                ForestPointBottomBar(
+                                    currentRoute = "Settings",
+                                    onNavigate = { route ->
+                                        if (route == "Settings") {
+                                            navController.popBackStack(
+                                                "Settings",
+                                                false
+                                            )
+                                        } else {
+                                            navController.navigate(route) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    },
+                                    onForecastClick = {
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            Box(
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                SharedNotificationPreview()
+                            }
+                        }
+                    }
+
+                    composable("OfflineRegions") {
+                        Scaffold(
+                            bottomBar = {
+                                ForestPointBottomBar(
+                                    currentRoute = "Settings",
+                                    onNavigate = { route ->
+                                        if (route == "Settings") {
+                                            navController.popBackStack(
+                                                "Settings",
+                                                false
+                                            )
+                                        } else {
+                                            navController.navigate(route) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    },
+                                    onForecastClick = {
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            Box(
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                SharedOfflineRegionsPreview(
+                                    viewModel = settingsViewModel,
+
+                                    onNavigateToDownload = {
+                                        navController.navigate("DownloadArea")
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    composable("DownloadArea") {
+                        Scaffold(
+                            bottomBar = {
+                                ForestPointBottomBar(
+                                    currentRoute = "Settings",
+                                    onNavigate = { route ->
+                                        if (route == "Settings") {
+                                            navController.popBackStack(
+                                                "Settings",
+                                                false
+                                            )
+                                        } else {
+                                            navController.navigate(route) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    },
+                                    onForecastClick = {
+                                        navController.navigate("Forecast") {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            Box(
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                SharedDownloadAreaPreview(
+                                    viewModel = settingsViewModel
+                                )
+                            }
+                        }
+                    }
+                }
+
                 }
             }
 
