@@ -1,0 +1,195 @@
+
+<resources>
+    <string name="forest_all">Все</string>
+    <string name="forest_coniferous">🌲 Хвойный</string>
+    <string name="forest_deciduous">🌳 Лиственный</string>
+    <string name="forest_mixed">🌲🌳 Смешанный</string>
+
+    <string name="safety_notice_title">Внимание!</string>
+    <string name="safety_notice_text">Отсутствие значка «Опасный гриб» не гарантирует безопасность гриба. Не определяйте съедобность грибов по приложению.</string>
+
+    <string name="back">Назад</string>
+    <string name="notifications">Уведомления</string>
+    <string name="turn_off_notifications">Отключить уведомления</string>
+    <string name="turn_on_notifications">Включить уведомления</string>
+    <string name="what_is_the_habitat_of">Где растёт</string>
+    <string name="description">Описание</string>
+    <string name="similar_species">Похожие виды</string>
+    <string name="differences_from_original">Чем отличается</string>
+    <string name="harvest_period">Период сбора</string>
+    <string name="dangerous_mushroom">Опасный гриб</string>
+
+    <string name="mushrooms">Грибы</string>
+    <string name="berries">Ягоды</string>
+    <string name="plants">Растения</string>
+    <string name="nuts">Орехи</string>
+    <string name="enter_a_name">Введите название...</string>
+    <string name="search">Поиск</string>
+    <string name="clear">Очистить</string>
+    <string name="home">Главная</string>
+    <string name="map">Карта</string>
+    <string name="guide">Справочник</string>
+    <string name="settings">Настройки</string>
+
+    <string name="from_to">С %1$s по %2$s</string>
+
+    <string name="from_january">января</string>
+    <string name="from_february">февраля</string>
+    <string name="from_march">марта</string>
+    <string name="from_april">апреля</string>
+    <string name="from_may">мая</string>
+    <string name="from_june">июня</string>
+    <string name="from_july">июля</string>
+    <string name="from_august">августа</string>
+    <string name="from_september">сентября</string>
+    <string name="from_october">октября</string>
+    <string name="from_november">ноября</string>
+    <string name="from_december">декабря</string>
+
+    <string name="january">январь</string>
+    <string name="february">февраль</string>
+    <string name="march">март</string>
+    <string name="april">апрель</string>
+    <string name="may">май</string>
+    <string name="june">июнь</string>
+    <string name="july">июль</string>
+    <string name="august">август</string>
+    <string name="september">сентябрь</string>
+    <string name="october">октябрь</string>
+    <string name="november">ноябрь</string>
+    <string name="december">декабрь</string>
+
+    <string name="detail_season_not_specified">Период не указан</string>
+    <string name="season">Сезон: %1$s — %2$s</string>
+    <string name="season_now">Сезон сейчас</string>
+    <string name="no_active_seasons">Нет активных сезонов</string>
+    <string name="days_left">Осталось ~%1$d дней</string>
+    <string name="all_seasons">Все</string>
+
+    <string name="tip">Совет</string>
+    <string name="reference">Справочники</string>
+    <string name="open_map">Открыть карту</string>
+    <string name="forecast_excellent">Отличные условия</string>
+    <string name="forecast_good">Хорошие условия</string>
+    <string name="forecast_weak">Слабая вероятность</string>
+
+    <string name="forecast_title">Прогноз</string>
+    <string name="forecast_subtitle">Какие виды можно найти сейчас, судя по погоде</string>
+    <string name="weather_now">Сейчас:</string>
+    <string name="weather_last_5days">За 5 дней:</string>
+    <string name="no_weather_data">Нет данных о погоде</string>
+    <string name="no_suitable_species">Сейчас нет подходящих видов</string>
+    <string name="forecast_analyzing_social_data">Анализируем соцсети…</string>
+    <string name="social_no_internet_title">Нет подключения к интернету</string>
+    <string name="social_no_internet_message">Не удалось получить свежие грибные данные. Проверьте подключение к интернету.</string>
+    <string name="social_service_error_title">Не удалось обновить прогноз</string>
+    <string name="social_service_error_message">Сервис временно недоступен. Попробуйте ещё раз позже.</string>
+    <string name="map_layers_description">Слои карты</string>
+    <string name="map_provider_osm">OpenStreetMap</string>
+    <string name="map_provider_google">Google Maps</string>
+    <string name="google_map_layer_normal">Обычная</string>
+    <string name="google_map_layer_satellite">Спутник</string>
+    <string name="google_map_layer_hybrid">Гибрид</string>
+    <string name="google_map_layer_terrain">Рельеф</string>
+    <string name="map_layer_selected">✓ %1$s</string>
+    <string name="weather_on_date">Погода на:</string>
+    <string name="weather_5days_before">За 5 дней до:</string>
+    <string name="loadingl_eather">🌤️ Загрузка погоды...</string>
+    <string name="delete_this_point">Удалить точку?</string>
+    <string name="this_action_cannot_be_undone">Это действие нельзя отменить.</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+    <string name="search_places">Поиск мест...</string>
+    <string name="map_center_on_me">Моё местоположение</string>
+    <string name="map_zoom_in">Увеличить масштаб</string>
+    <string name="map_zoom_out">Уменьшить масштаб</string>
+    <string name="place">Место</string>
+    <string name="add_place">Добавить</string>
+    <string name="filter_my_points">Мои</string>
+    <string name="filter_all_points">Все</string>
+
+    <string name="settings_screen_title">Настройки</string>
+    <string name="settings_account">Аккаунт</string>
+    <string name="settings_default_user">Пользователь</string>
+    <string name="settings_sign_in_google">Войти через Google</string>
+    <string name="settings_sign_in_description">Синхронизация и публикация точек</string>
+    <string name="settings_logout">Выйти</string>
+    <string name="settings_logout_description">Выйти из аккаунта</string>
+    <string name="settings_delete_account">Удалить аккаунт ForestPoint</string>
+    <string name="settings_delete_account_description">Удалить аккаунт и все данные</string>
+    <string name="settings_notifications">Уведомления</string>
+    <string name="settings_seasonal">Сезонные уведомления</string>
+    <string name="settings_seasonal_description">Начало, пик и конец сезона</string>
+    <string name="settings_my_data">Мои данные</string>
+    <string name="settings_backup">Резервная копия</string>
+    <string name="settings_backup_description">Сохранить все точки в файл</string>
+    <string name="settings_restore">Восстановить</string>
+    <string name="settings_restore_description">Загрузить точки из файла</string>
+    <string name="settings_offline_maps">Скачать карту</string>
+    <string name="settings_offline_description">Области для использования без интернета</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_privacy">Конфиденциальность</string>
+    <string name="settings_privacy_description">Как мы обрабатываем ваши данные</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_system">Системный</string>
+    <string name="settings_russian">Русский</string>
+    <string name="settings_english">English</string>
+    <string name="settings_contact">Связаться с разработчиком</string>
+    <string name="settings_contact_description">Вопросы и предложения</string>
+    <string name="settings_rate">Оценить приложение</string>
+    <string name="settings_rate_description">Помогите нам стать лучше</string>
+    <string name="settings_version">Версия приложения</string>
+    <string name="settings_delete_warning">Все ваши точки и данные будут безвозвратно удалены. Это действие нельзя отменить.</string>
+    <string name="settings_backup_warning">Сохранить все ваши точки в файл GPX?</string>
+    <string name="settings_restore_warning">Выберите файл GPX для восстановления точек.</string>
+    <string name="settings_save">Сохранить</string>
+    <string name="settings_choose_file">Выбрать файл</string>
+    <string name="settings_delete">Удалить</string>
+    <string name="settings_cancel">Отмена</string>
+
+    <string name="notification_seasonal_title">Сезонные уведомления</string>
+    <string name="notification_seasonal_description">Выберите, когда вы хотите получать уведомления</string>
+    <string name="notification_start">Начало сезона</string>
+    <string name="notification_start_description">За день до начала и в первый день сезона</string>
+    <string name="notification_peak">Пик сезона</string>
+    <string name="notification_peak_description">Середина сезона — лучшее время для сбора</string>
+    <string name="notification_end">Конец сезона</string>
+    <string name="notification_end_description">За неделю до окончания сезона</string>
+    <string name="notification_disabled">Все сезонные уведомления выключены</string>
+    <string name="notification_enabled_hint">Уведомления приходят примерно в середине дня</string>
+    <string name="notification_species_count">Виды с уведомлениями: %1$d</string>
+    <string name="notification_no_species">Нет видов с включёнными уведомлениями</string>
+    <string name="notification_enable_in_guide">Включите уведомления в справочнике, нажав на значок колокольчика</string>
+    <string name="notification_species_season">Сезон: %1$d–%2$d мес.</string>
+    <string name="notification_disable_species">Выключить уведомления для вида</string>
+
+    <string name="offline_regions_title">Офлайн-карты</string>
+    <string name="offline_regions_count">Скачано областей: %1$d</string>
+    <string name="offline_regions_empty">Нет скачанных карт</string>
+    <string name="offline_regions_empty_hint">Скачайте область карты, чтобы использовать её без интернета</string>
+    <string name="offline_regions_download">Скачать область</string>
+    <string name="offline_regions_metadata">%1$s • %2$d тайлов • %3$s</string>
+    <string name="offline_regions_delete_title">Удалить область?</string>
+    <string name="offline_regions_delete_warning">Удалить скачанную область «%1$s»?</string>
+
+    <string name="download_area_title">Скачать карту</string>
+    <string name="download_area_instruction">Переместите карту и выберите область для загрузки</string>
+    <string name="download_area_selection">Область загрузки</string>
+    <string name="download_area_button">Скачать эту область</string>
+    <string name="download_area_loading">Загрузка...</string>
+    <string name="download_area_region_name">Название области</string>
+    <string name="download_area_name_hint">Введите название для сохранения карты</string>
+    <string name="download_area_name_example">Например: Мой лес</string>
+    <string name="download_area_size">Площадь: %1$s км²</string>
+    <string name="download_area_estimate">Примерный размер: %1$s МБ, тайлов: %2$d</string>
+    <string name="download_area_progress">Скачано тайлов: %1$d из %2$d</string>
+    <string name="download_area_error">Не удалось скачать область</string>
+    <string name="download_area_success">Карта успешно сохранена</string>
+    <string name="download_area_download">Скачать</string>
+    <string name="download_area_cancel">Отмена</string>
+    <string name="download_area_location">Моё местоположение</string>
+    <string name="download_area_zoom_in">Увеличить масштаб</string>
+    <string name="download_area_zoom_out">Уменьшить масштаб</string>
+
+
+</resources>

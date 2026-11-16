@@ -1,0 +1,34 @@
+
+import SwiftUI
+import UIKit
+import ForestPointShared
+
+struct ComposeView: UIViewControllerRepresentable {
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.MainViewController()
+    }
+
+    func updateUIViewController(
+        _ uiViewController: UIViewController,
+        context: Context
+    ) {
+    }
+}
+
+
+
+struct ContentView: View {
+    var body: some View {
+        ComposeView()
+            .background(
+                Color(
+                    red: 0.075,
+                    green: 0.067,
+                    blue: 0.082
+                )
+                .ignoresSafeArea()
+            )
+            .preferredColorScheme(.dark)
+    }
+}

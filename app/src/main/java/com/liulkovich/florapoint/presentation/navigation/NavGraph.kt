@@ -72,13 +72,23 @@ fun NavGraph(
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            if (ActivityCompat.checkSelfPermission(
+
+            val hasFineLocation =
+                ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
-            ) {
+
+            val hasCoarseLocation =
+                ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+            if (hasFineLocation || hasCoarseLocation) {
                 requestFreshLocation(context, weatherViewModel)
             } else {
                 locationPermissionLauncher.launch(
@@ -90,6 +100,7 @@ fun NavGraph(
             }
         }
     }
+
     val screensWithoutBottomBar = listOf(Screen.Detail.rout)
     val showBottomBar = currentRoute !in screensWithoutBottomBar
     val normalizedRoute = if (currentRoute?.startsWith("Map") == true) {
@@ -367,29 +378,56 @@ sealed class Screen(val rout: String) {
 private var lastLocationRequestTime = 0L
 private const val LOCATION_REQUEST_INTERVAL = 10 * 60 * 1000L
 
+
 @SuppressLint("MissingPermission")
-private fun requestFreshLocation(context: Context, weatherViewModel: WeatherViewModel) {
+private fun requestFreshLocation(
+    context: Context,
+    weatherViewModel: WeatherViewModel
+) {
+    val hasFineLocation =
+        ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+    val hasCoarseLocation =
+        ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+    if (!hasFineLocation && !hasCoarseLocation) return
+
     val now = System.currentTimeMillis()
-    if (now - lastLocationRequestTime < LOCATION_REQUEST_INTERVAL) return
+
+    if (now - lastLocationRequestTime <
+        LOCATION_REQUEST_INTERVAL
+    ) return
+
     lastLocationRequestTime = now
 
-    val fusedClient = LocationServices.getFusedLocationProviderClient(context)
+    val fusedClient =
+        LocationServices.getFusedLocationProviderClient(context)
 
-    fusedClient.lastLocation.addOnSuccessListener { location ->
-        if (location != null) {
-            weatherViewModel.updateLocation(location.latitude, location.longitude)
-        } else {
-            if (ActivityCompat.checkSelfPermission(
-                    context, Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                fusedClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
-                    .addOnSuccessListener { freshLocation ->
-                        if (freshLocation != null) {
-                            weatherViewModel.updateLocation(freshLocation.latitude, freshLocation.longitude)
-                        }
+    fusedClient.lastLocation
+        .addOnSuccessListener { location ->
+            if (location != null) {
+                weatherViewModel.updateLocation(
+                    location.latitude,
+                    location.longitude
+                )
+            } else {
+                fusedClient.getCurrentLocation(
+                    Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                    null
+                ).addOnSuccessListener { freshLocation ->
+                    if (freshLocation != null) {
+                        weatherViewModel.updateLocation(
+                            freshLocation.latitude,
+                            freshLocation.longitude
+                        )
                     }
+                }
             }
         }
-    }
 }

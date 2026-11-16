@@ -220,4 +220,13 @@
     <string name="map_point_avg_temperature">🌡️ Ø %1$s°</string>
     <string name="map_point_avg_humidity">💧 Ø %1$s%%</string>
 
+    <string name="dangerous_mushroom">Dangerous mushroom</string>
+    <string name="safety_notice_title">Warning!</string>
+    <string name="safety_notice_text">The absence of a "Dangerous mushroom" label does not guarantee that a mushroom is safe. Do not use this app to determine whether mushrooms are edible.</string>
+    <string name="forest_filter_title">Where do mushrooms grow?</string>
+    <string name="forest_all">All</string>
+    <string name="forest_coniferous">🌲 Coniferous</string>
+    <string name="forest_deciduous">🌳 Deciduous</string>
+    <string name="forest_mixed">🌲🌳 Mixed</string>
+
 </resources>
