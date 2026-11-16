@@ -52,7 +52,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalConfiguration
 import com.liulkovich.florapoint.shared.ui.home.SharedHomeScreen
 import com.liulkovich.florapoint.presentation.screens.home.HomeViewModel
-import com.liulkovich.florapoint.presentation.screens.home.countDay
+import com.liulkovich.florapoint.shared.domain.countSeasonDaysLeft
+import java.util.Calendar
 import androidx.compose.ui.viewinterop.AndroidView
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -240,9 +241,18 @@ class SharedPreviewActivity : ComponentActivity() {
                                 state = sharedHomeState,
                                 language = language,
                                 notificationEnabledIds = notificationEnabledIds,
+
                                 daysLeftCount = { endMonth ->
-                                    countDay(endMonth)
+                                    val today = Calendar.getInstance()
+
+                                    countSeasonDaysLeft(
+                                        endMonth = endMonth,
+                                        currentYear = today.get(Calendar.YEAR),
+                                        currentMonth = today.get(Calendar.MONTH) + 1,
+                                        currentDay = today.get(Calendar.DAY_OF_MONTH)
+                                    )
                                 },
+
 
                                 onClickMap = {
                                     navController.navigate("Map") {

@@ -20,6 +20,16 @@ kotlin {
         }
     }
 
+
+    iosX64 {
+        binaries.framework {
+            baseName = "ForestPointShared"
+            isStatic = true
+            linkerOpts.add("-lsqlite3")
+        }
+    }
+
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -30,9 +40,55 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(compose.components.resources)
         }
+
+        iosX64Main.dependencies {
+            implementation(libs.androidx.room.runtime)
+            implementation("androidx.sqlite:sqlite-bundled:2.6.2")
+        }
+
     }
 }
+
+
+val sharedPhotoDirectory =
+    layout.buildDirectory.dir("generated/forestpointPhotos")
+
+
+val prepareSharedPhotoResources =
+    tasks.register<Sync>("prepareSharedPhotoResources") {
+
+        // Сохраняем все существующие общие ресурсы:
+        // переводы, иконки категорий и другие файлы.
+        from(
+            layout.projectDirectory.dir(
+                "src/commonMain/composeResources"
+            )
+        )
+
+        // Добавляем фотографии из оригинального Android-проекта.
+        from(
+            rootProject.layout.projectDirectory.dir(
+                "app/src/main/res/drawable"
+            )
+        ) {
+            include("*.webp")
+            into("drawable")
+        }
+
+        into(sharedPhotoDirectory)
+    }
+
+
+
+
 compose.resources {
     packageOfResClass =
         "com.liulkovich.florapoint.shared.generated.resources"
+
+    customDirectory(
+        sourceSetName = "commonMain",
+        directoryProvider = prepareSharedPhotoResources.map {
+            sharedPhotoDirectory.get()
+        }
+    )
 }
