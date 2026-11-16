@@ -1,9 +1,14 @@
 
 package com.liulkovich.florapoint.shared
 
+import com.liulkovich.florapoint.shared.domain.SharedGuideCommand
+import com.liulkovich.florapoint.shared.domain.SharedGuideScreenState
+import com.liulkovich.florapoint.shared.ui.guide.SharedGuideScreen
 import com.liulkovich.florapoint.shared.ui.components.SharedSpeciesImage
 import com.liulkovich.florapoint.shared.domain.ReferenceModel
 import platform.Foundation.NSCalendar
+import com.liulkovich.florapoint.shared.domain.SharedDetailScreenState
+import com.liulkovich.florapoint.shared.ui.detail.SharedDetailScreen
 import platform.Foundation.NSCalendarUnitMonth
 import platform.Foundation.NSDate
 import androidx.compose.foundation.layout.Box
@@ -47,8 +52,50 @@ fun MainViewController(): UIViewController =
             mutableStateOf("Home")
         }
 
+
+        var allFloraSpecies by remember {
+            mutableStateOf(loadFloraSpecies())
+        }
+
+        val changeFloraNotification: (Int, Boolean) -> Unit = { speciesId, enabled ->
+            // Сохраняем значение в SQLite.
+            updateFloraNotification(
+                speciesId = speciesId,
+                enabled = enabled
+            )
+
+            // Обновляем данные для всех экранов.
+            allFloraSpecies = allFloraSpecies.map { species ->
+                if (species.id == speciesId) {
+                    species.copy(
+                        isNotifEnabled = if (enabled) 1 else 0
+                    )
+                } else {
+                    species
+                }
+            }
+        }
+
+
         var selectedSeasonCategory by remember {
             mutableStateOf<String?>(null)
+        }
+
+        var guideQuery by remember {
+            mutableStateOf("")
+        }
+
+        var selectedDetailSpeciesId by remember {
+            mutableStateOf<Int?>(null)
+        }
+
+        var detailReturnRoute by remember {
+            mutableStateOf("Guide")
+        }
+
+
+        var guideSelectedCategories by remember {
+            mutableStateOf<Set<String>>(emptySet())
         }
 
         val tipText = remember {
@@ -61,16 +108,18 @@ fun MainViewController(): UIViewController =
 
         Scaffold(
                 bottomBar = {
-                    ForestPointBottomBar(
-                        currentRoute = currentRoute,
-                        onNavigate = { route ->
-                            currentRoute = route
-                        },
-                        onForecastClick = {
-                            currentRoute = "Forecast"
-                        },
-                        compact = false
-                    )
+                    if (currentRoute != "Detail") {
+                        ForestPointBottomBar(
+                            currentRoute = currentRoute,
+                            onNavigate = { route ->
+                                currentRoute = route
+                            },
+                            onForecastClick = {
+                                currentRoute = "Forecast"
+                            },
+                            compact = false
+                        )
+                    }
                 }
             ) { innerPadding ->
 
@@ -80,13 +129,13 @@ fun MainViewController(): UIViewController =
                         SharedHomeScreen(
                             state = SharedHomeScreenState(
 
-                                species = remember(selectedSeasonCategory) {
+                                species = remember(selectedSeasonCategory, allFloraSpecies) {
                                     val currentMonth = NSCalendar.currentCalendar.component(
                                         NSCalendarUnitMonth,
                                         fromDate = NSDate()
                                     ).toInt()
 
-                                    loadFloraSpecies()
+                                    allFloraSpecies
                                         .filter { item ->
                                             val inSeason =
                                                 if (item.startMonth <= item.endMonth) {
@@ -118,7 +167,12 @@ fun MainViewController(): UIViewController =
 
                             language = "ru",
 
-                            notificationEnabledIds = emptySet(),
+
+                            notificationEnabledIds = allFloraSpecies
+                                .filter { it.isNotifEnabled == 1 }
+                                .map { it.id }
+                                .toSet(),
+
 
                             daysLeftCount = { endMonth ->
                                 countDayIos(endMonth)
@@ -128,7 +182,9 @@ fun MainViewController(): UIViewController =
                                 currentRoute = "Map"
                             },
 
-                            onClickCategory = {
+                            onClickCategory = { category ->
+                                guideQuery = ""
+                                guideSelectedCategories = setOf(category)
                                 currentRoute = "Guide"
                             },
 
@@ -136,9 +192,17 @@ fun MainViewController(): UIViewController =
                                 selectedSeasonCategory = category
                             },
 
-                            onNotificationChange = { _, _ -> },
+                            onNotificationChange = { speciesId, enabled ->
+                                changeFloraNotification(speciesId, enabled)
+                            },
 
-                            onClickDetail = {},
+
+                            onClickDetail = { speciesId ->
+                                detailReturnRoute = "Home"
+                                selectedDetailSpeciesId = speciesId
+                                currentRoute = "Detail"
+                            },
+
 
                             mapContent = { modifier ->
                                 // Пока без карты.
@@ -193,15 +257,150 @@ fun MainViewController(): UIViewController =
                         )
                     }
 
+
                     "Guide" -> {
+
+                        // Загружаем все виды из настоящей SQLite-базы.
+                        val allGuideSpecies = allFloraSpecies
+
+                        // Применяем поиск и выбранные категории.
+                        val filteredGuideSpecies = remember(
+                            allGuideSpecies,
+                            guideQuery,
+                            guideSelectedCategories
+                        ) {
+                            val query = guideQuery.trim()
+
+                            allGuideSpecies.filter { species ->
+
+                                val matchesCategory =
+                                    guideSelectedCategories.isEmpty() ||
+                                            species.category in guideSelectedCategories
+
+                                val matchesQuery =
+                                    query.isEmpty() ||
+                                            species.nameRu.contains(
+                                                query,
+                                                ignoreCase = true
+                                            ) ||
+                                            species.nameEn?.contains(
+                                                query,
+                                                ignoreCase = true
+                                            ) == true
+
+                                matchesCategory && matchesQuery
+                            }
+                        }
+
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding)
                         ) {
-                            ForestPointSharedScreen()
+                            SharedGuideScreen(
+                                state = SharedGuideScreenState(
+                                    query = guideQuery,
+                                    species = filteredGuideSpecies,
+                                    selectedCategories = guideSelectedCategories,
+                                    isLoading = false
+                                ),
+
+                                language = "ru",
+
+                                onCommand = { command ->
+                                    when (command) {
+
+                                        is SharedGuideCommand.InputSearchQuery -> {
+                                            guideQuery = command.query
+                                        }
+
+                                        is SharedGuideCommand.CheckCategory -> {
+                                            val category = command.check
+
+                                            guideSelectedCategories =
+                                                if (category in guideSelectedCategories) {
+                                                    guideSelectedCategories - category
+                                                } else {
+                                                    guideSelectedCategories + category
+                                                }
+                                        }
+
+                                        is SharedGuideCommand.ToggleNotification -> {
+                                            changeFloraNotification(
+                                                command.id,
+                                                command.enabled == 1
+                                            )
+                                        }
+                                    }
+                                },
+
+
+                                onClickDetail = { speciesId ->
+                                    detailReturnRoute = "Guide"
+                                    selectedDetailSpeciesId = speciesId
+                                    currentRoute = "Detail"
+                                },
+
+
+                                imageContent = { imageName, modifier ->
+                                    SharedSpeciesImage(
+                                        imageName = imageName,
+                                        modifier = modifier
+                                    )
+                                }
+                            )
                         }
                     }
+
+
+                    "Detail" -> {
+
+                        val detailSpecies = allFloraSpecies.firstOrNull { species ->
+                            species.id == selectedDetailSpeciesId
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                        ) {
+                            SharedDetailScreen(
+                                state = SharedDetailScreenState(
+                                    species = detailSpecies,
+                                    isNotificationEnabled =
+                                        detailSpecies?.isNotifEnabled == 1,
+                                    resolvedLookAlikes = emptyMap()
+                                ),
+
+                                language = "ru",
+
+
+                                onBack = {
+                                    selectedDetailSpeciesId = null
+                                    currentRoute = detailReturnRoute
+                                },
+
+
+                                onNotificationToggle = { enabled ->
+                                    selectedDetailSpeciesId?.let { speciesId ->
+                                        changeFloraNotification(speciesId, enabled)
+                                    }
+                                },
+
+                                onSpeciesClick = { speciesId ->
+                                    selectedDetailSpeciesId = speciesId
+                                },
+
+                                imageContent = { imageName, modifier ->
+                                    SharedSpeciesImage(
+                                        imageName = imageName,
+                                        modifier = modifier
+                                    )
+                                }
+                            )
+                        }
+                    }
+
 
                     else -> {
                         Box(

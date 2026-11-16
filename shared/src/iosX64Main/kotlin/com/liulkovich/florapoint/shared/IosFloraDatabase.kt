@@ -145,3 +145,28 @@ fun loadRandomFloraTip(language: String = "ru"): String? {
         }
     }
 }
+
+
+fun updateFloraNotification(
+    speciesId: Int,
+    enabled: Boolean
+) {
+    val driver = BundledSQLiteDriver()
+
+    driver.open(floraDatabasePath()).use { connection ->
+        connection.prepare(
+            """
+            UPDATE reference_table
+            SET is_notif_enabled = ?
+            WHERE id = ?
+            """.trimIndent()
+        ).use { statement ->
+            statement.bindLong(
+                1,
+                if (enabled) 1L else 0L
+            )
+            statement.bindLong(2, speciesId.toLong())
+            statement.step()
+        }
+    }
+}
