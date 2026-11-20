@@ -39,6 +39,9 @@ kotlin {
             implementation(compose.runtimeSaveable)
             implementation(libs.navigation.compose)
             implementation(compose.components.resources)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.engine.defaults)
+            implementation(libs.kotlinx.serialization.json)
         }
 
         iosX64Main.dependencies {

@@ -1,12 +1,16 @@
-
 import SwiftUI
 import UIKit
 import ForestPointShared
 
 struct ComposeView: UIViewControllerRepresentable {
 
-    func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+    func makeUIViewController(
+        context: Context
+    ) -> UIViewController {
+
+        return MainViewControllerKt.MainViewController(
+            socialGateway: IosSocialForecastService()
+        )
     }
 
     func updateUIViewController(
@@ -16,10 +20,10 @@ struct ComposeView: UIViewControllerRepresentable {
     }
 }
 
-
-
 struct ContentView: View {
+
     var body: some View {
+
         ComposeView()
             .background(
                 Color(

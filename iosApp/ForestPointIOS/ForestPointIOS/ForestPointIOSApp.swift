@@ -1,17 +1,18 @@
 import SwiftUI
 import ForestPointShared
+import FirebaseCore
 
 @main
 struct ForestPointIOSApp: App {
 
-
     init() {
-        prepareFloraDatabase()
+        FirebaseApp.configure()
+
+            prepareFloraDatabase()
 
         let speciesCount = IosFloraDatabaseKt.countFloraSpecies()
         print("✅ ForestPoint iOS: \(speciesCount) видов")
     }
-
 
     var body: some Scene {
         WindowGroup {

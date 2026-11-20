@@ -7,6 +7,7 @@ import com.liulkovich.florapoint.shared.domain.ReferenceModel
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileManager
+import com.liulkovich.florapoint.shared.domain.SharedSpeciesConditions
 import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
@@ -169,4 +170,40 @@ fun updateFloraNotification(
             statement.step()
         }
     }
+}
+
+
+fun loadFloraConditions(): List<SharedSpeciesConditions> {
+    val conditions = mutableListOf<SharedSpeciesConditions>()
+    val driver = BundledSQLiteDriver()
+
+    driver.open(floraDatabasePath()).use { connection ->
+        connection.prepare(
+            """
+            SELECT
+                species_id,
+                temp_min,
+                temp_max,
+                humidity_min,
+                humidity_max
+            FROM species_conditions
+            ORDER BY species_id
+            """.trimIndent()
+        ).use { statement ->
+
+            while (statement.step()) {
+                conditions.add(
+                    SharedSpeciesConditions(
+                        speciesId = statement.getInt(0),
+                        tempMin = statement.getInt(1),
+                        tempMax = statement.getInt(2),
+                        humidityMin = statement.getInt(3),
+                        humidityMax = statement.getInt(4)
+                    )
+                )
+            }
+        }
+    }
+
+    return conditions
 }

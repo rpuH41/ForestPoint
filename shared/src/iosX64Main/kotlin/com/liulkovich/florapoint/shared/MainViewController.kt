@@ -1,56 +1,86 @@
 
 package com.liulkovich.florapoint.shared
 
-import com.liulkovich.florapoint.shared.domain.SharedGuideCommand
-import com.liulkovich.florapoint.shared.domain.SharedGuideScreenState
-import com.liulkovich.florapoint.shared.ui.guide.SharedGuideScreen
-import com.liulkovich.florapoint.shared.ui.components.SharedSpeciesImage
-import com.liulkovich.florapoint.shared.domain.ReferenceModel
-import platform.Foundation.NSCalendar
-import com.liulkovich.florapoint.shared.domain.SharedDetailScreenState
-import com.liulkovich.florapoint.shared.ui.detail.SharedDetailScreen
-import platform.Foundation.NSCalendarUnitMonth
-import platform.Foundation.NSDate
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.ComposeUIViewController
+import com.liulkovich.florapoint.shared.domain.ReferenceModel
+import com.liulkovich.florapoint.shared.domain.SharedDetailScreenState
 import com.liulkovich.florapoint.shared.domain.SharedFloraCategory
+import com.liulkovich.florapoint.shared.domain.SharedForecastScreenState
+import com.liulkovich.florapoint.shared.domain.SharedGuideCommand
+import com.liulkovich.florapoint.shared.domain.SharedGuideScreenState
 import com.liulkovich.florapoint.shared.domain.SharedHomeScreenState
-import com.liulkovich.florapoint.shared.ui.ForestPointSharedScreen
+import com.liulkovich.florapoint.shared.domain.SharedSocialForecastGateway
+import com.liulkovich.florapoint.shared.domain.SharedWeatherData
+import com.liulkovich.florapoint.shared.domain.calculateSharedForecast
+import com.liulkovich.florapoint.shared.domain.countSeasonDaysLeft
+import com.liulkovich.florapoint.shared.domain.loadSharedWeather
+import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.berry
+import com.liulkovich.florapoint.shared.generated.resources.mushroom
+import com.liulkovich.florapoint.shared.generated.resources.nut
+import com.liulkovich.florapoint.shared.generated.resources.plant
 import com.liulkovich.florapoint.shared.ui.components.ForestPointBottomBar
+import com.liulkovich.florapoint.shared.ui.components.SharedSpeciesImage
+import com.liulkovich.florapoint.shared.ui.detail.SharedDetailScreen
+import com.liulkovich.florapoint.shared.ui.forecast.SharedForecastScreen
+import com.liulkovich.florapoint.shared.ui.guide.SharedGuideScreen
 import com.liulkovich.florapoint.shared.ui.home.SharedHomeScreen
 import com.liulkovich.florapoint.shared.ui.theme.ForestPointSharedTheme
-import platform.UIKit.UIViewController
-import com.liulkovich.florapoint.shared.domain.countSeasonDaysLeft
-import platform.Foundation.NSCalendarUnitDay
-import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.painterResource
-import androidx.compose.runtime.remember
-import com.liulkovich.florapoint.shared.generated.resources.Res
-import com.liulkovich.florapoint.shared.generated.resources.mushroom
-import com.liulkovich.florapoint.shared.generated.resources.berry
-import com.liulkovich.florapoint.shared.generated.resources.plant
-import com.liulkovich.florapoint.shared.generated.resources.nut
+import platform.Foundation.NSCalendar
+import platform.Foundation.NSCalendarUnitDay
+import platform.Foundation.NSCalendarUnitMonth
 import platform.Foundation.NSCalendarUnitYear
-import platform.Foundation.NSDateComponents
-import platform.Foundation.timeIntervalSince1970
+import platform.Foundation.NSDate
+import platform.UIKit.UIViewController
+import kotlinx.coroutines.async
+import com.liulkovich.florapoint.shared.domain.SharedSocialForecastSessionCache
+import com.liulkovich.florapoint.shared.domain.SharedSocialForecastError
 
-fun MainViewController(): UIViewController =
+fun MainViewController(
+    socialGateway: SharedSocialForecastGateway
+): UIViewController =
     ComposeUIViewController {
 
         var currentRoute by remember {
             mutableStateOf("Home")
         }
+
+        var weather by remember {
+            mutableStateOf<SharedWeatherData?>(null)
+        }
+
+        var forecastState by remember {
+            mutableStateOf(SharedForecastScreenState())
+        }
+
+        val socialForecastCache = remember {
+            SharedSocialForecastSessionCache()
+        }
+
+        var weatherLoading by remember {
+            mutableStateOf(false)
+        }
+
+
+
+
 
 
         var allFloraSpecies by remember {
@@ -101,6 +131,171 @@ fun MainViewController(): UIViewController =
         val tipText = remember {
             loadRandomFloraTip(language = "ru")
         }
+
+        LaunchedEffect(currentRoute) {
+
+            if (currentRoute != "Forecast") {
+                return@LaunchedEffect
+            }
+
+            forecastState = SharedForecastScreenState(
+                isLoading = true
+            )
+
+            try {
+                // Временно: тестовые координаты Москвы.
+                // Позже заменим на CLLocationManager.
+
+                val location = withTimeoutOrNull(30_000L) {
+                    requestIosCoordinates()
+                }
+
+                if (location == null) {
+                    println("Forecast: координаты недоступны")
+
+                    forecastState = SharedForecastScreenState(
+                        isLoading = false,
+                        noWeather = true
+                    )
+
+                    return@LaunchedEffect
+                }
+
+                println(
+                    "Forecast: координаты получены"
+                )
+
+                val weatherData = loadSharedWeather(
+                    latitude = location.latitude,
+                    longitude = location.longitude
+                )
+
+                if (weatherData == null) {
+                    forecastState = SharedForecastScreenState(
+                        isLoading = false,
+                        noWeather = true
+                    )
+                    return@LaunchedEffect
+                }
+
+                val language = "ru"
+
+                val cachedSocial = socialForecastCache.get(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                    language = language
+                )
+
+                val socialDeferred = if (cachedSocial == null) {
+                    async {
+                        requestIosSocialForecast(
+                            gateway = socialGateway,
+                            latitude = location.latitude,
+                            longitude = location.longitude,
+                            language = language
+                        )
+                    }
+                } else {
+                    null
+                }
+
+                val conditions = loadFloraConditions()
+
+                val currentMonth = NSCalendar.currentCalendar
+                    .component(
+                        NSCalendarUnitMonth,
+                        fromDate = NSDate()
+                    )
+                    .toInt()
+
+                val forecastItems = calculateSharedForecast(
+                    species = allFloraSpecies,
+                    conditions = conditions,
+                    weather = weatherData,
+                    currentMonth = currentMonth
+                )
+
+
+                forecastState = SharedForecastScreenState(
+                    isLoading = false,
+                    noWeather = false,
+                    items = forecastItems,
+
+                    temperature = weatherData.temperature,
+                    humidity = weatherData.humidity,
+                    avgTemp = weatherData.avgTemp5Days,
+                    avgHumidity = weatherData.avgHumidity5Days,
+                    currentMonth = currentMonth,
+
+                    socialLoading = socialDeferred != null,
+                    socialMessage = cachedSocial?.message,
+                    socialSpecies = cachedSocial?.species ?: emptyList(),
+                    socialError = null
+                )
+
+
+                if (socialDeferred != null) {
+
+                    when (val result = socialDeferred.await()) {
+
+                        is IosSocialForecastResult.Success -> {
+
+                            socialForecastCache.save(
+                                latitude = location.latitude,
+                                longitude = location.longitude,
+                                language = language,
+                                message = result.message,
+                                species = result.species
+                            )
+
+                            println(
+                                "SocialForecast: получен ответ Firebase, " +
+                                        "публикаций: ${result.postsAnalyzed}"
+                            )
+
+                            forecastState = forecastState.copy(
+                                socialLoading = false,
+                                socialMessage = result.message,
+                                socialSpecies = result.species,
+                                socialError = null
+                            )
+                        }
+
+                        is IosSocialForecastResult.Failure -> {
+
+                            println(
+                                "SocialForecast: ошибка Firebase, " +
+                                        "noInternet=${result.noInternet}"
+                            )
+
+                            forecastState = forecastState.copy(
+                                socialLoading = false,
+                                socialMessage = null,
+                                socialSpecies = emptyList(),
+                                socialError = if (result.noInternet) {
+                                    SharedSocialForecastError.NO_INTERNET
+                                } else {
+                                    SharedSocialForecastError.SERVICE_UNAVAILABLE
+                                }
+                            )
+                        }
+                    }
+                }
+
+
+
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                println("Forecast loading failed: $e")
+
+                forecastState = SharedForecastScreenState(
+                    isLoading = false,
+                    noWeather = true
+                )
+            }
+        }
+
         ForestPointSharedTheme(
             darkTheme = true
         ) {
@@ -401,6 +596,31 @@ fun MainViewController(): UIViewController =
                         }
                     }
 
+
+
+                    "Forecast" -> {
+                        SharedForecastScreen(
+                            state = forecastState,
+                            language = "ru",
+
+                            onClickDetail = { speciesId ->
+                                detailReturnRoute = "Forecast"
+                                selectedDetailSpeciesId = speciesId
+                                currentRoute = "Detail"
+                            },
+
+                            onLocationClick = { _ ->
+                                // Подключим переход к точке,
+                                // когда перенесём карту.
+                            },
+
+                            formatDistance = { distanceKm ->
+                                distanceKm.toInt().toString()
+                            },
+
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
 
                     else -> {
                         Box(

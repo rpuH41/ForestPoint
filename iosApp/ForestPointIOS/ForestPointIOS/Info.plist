@@ -4,5 +4,7 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Местоположение нужно для расчёта прогноза грибов и растений рядом с вами.</string>
 </dict>
 </plist>

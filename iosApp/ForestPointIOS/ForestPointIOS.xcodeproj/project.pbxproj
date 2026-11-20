@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84460BFE30AC901400B1F1C3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84460BFC30AC901300B1F1C3 /* InfoPlist.strings */; };
+		84460C3930ACD99600B1F1C3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84460C3830ACD99600B1F1C3 /* FirebaseCore */; };
+		84460C3B30ACD9AD00B1F1C3 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */; };
+		845476A130B06A41002506F3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 845476A030B06A41002506F3 /* FirebaseAuth */; };
 		84AD8EB330AB20A300D1238A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84AD8EB230AB20A200D1238A /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +32,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		84460BFD30AC901300B1F1C3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		84460BFF30AC916E00B1F1C3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84AD8EB230AB20A200D1238A /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		84D6C67830A5ECF600C18DED /* ForestPointIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForestPointIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84D6C68530A5ECF900C18DED /* ForestPointIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForestPointIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -35,7 +41,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		84D6C6B330A6043400C18DED /* Exceptions for "ForestPointIOS" folder in "ForestPointIOS" target */ = {
+		84D6C6B330A6043400C18DED /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -48,18 +54,30 @@
 		84D6C67A30A5ECF600C18DED /* ForestPointIOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				84D6C6B330A6043400C18DED /* Exceptions for "ForestPointIOS" folder in "ForestPointIOS" target */,
+				84D6C6B330A6043400C18DED /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = ForestPointIOS;
 			sourceTree = "<group>";
 		};
 		84D6C68830A5ECF900C18DED /* ForestPointIOSTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = ForestPointIOSTests;
 			sourceTree = "<group>";
 		};
 		84D6C69230A5ECF900C18DED /* ForestPointIOSUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = ForestPointIOSUITests;
 			sourceTree = "<group>";
 		};
@@ -70,7 +88,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84460C3B30ACD9AD00B1F1C3 /* FirebaseFunctions in Frameworks */,
+				84460C3930ACD99600B1F1C3 /* FirebaseCore in Frameworks */,
 				84AD8EB330AB20A300D1238A /* libsqlite3.tbd in Frameworks */,
+				845476A130B06A41002506F3 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +123,7 @@
 		84D6C66F30A5ECF500C18DED = {
 			isa = PBXGroup;
 			children = (
+				84460BFC30AC901300B1F1C3 /* InfoPlist.strings */,
 				84D6C67A30A5ECF600C18DED /* ForestPointIOS */,
 				84D6C68830A5ECF900C18DED /* ForestPointIOSTests */,
 				84D6C69230A5ECF900C18DED /* ForestPointIOSUITests */,
@@ -141,6 +163,9 @@
 			);
 			name = ForestPointIOS;
 			packageProductDependencies = (
+				84460C3830ACD99600B1F1C3 /* FirebaseCore */,
+				84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */,
+				845476A030B06A41002506F3 /* FirebaseAuth */,
 			);
 			productName = ForestPointIOS;
 			productReference = 84D6C67830A5ECF600C18DED /* ForestPointIOS.app */;
@@ -221,9 +246,13 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 84D6C66F30A5ECF500C18DED;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 84D6C67930A5ECF600C18DED /* Products */;
 			projectDirPath = "";
@@ -241,6 +270,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84460BFE30AC901400B1F1C3 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +347,18 @@
 			targetProxy = 84D6C69030A5ECF900C18DED /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		84460BFC30AC901300B1F1C3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84460BFD30AC901300B1F1C3 /* en */,
+				84460BFF30AC916E00B1F1C3 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		84D6C69730A5ECF900C18DED /* Debug */ = {
@@ -604,6 +646,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 12.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		84460C3830ACD99600B1F1C3 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		845476A030B06A41002506F3 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 84D6C67030A5ECF600C18DED /* Project object */;
 }

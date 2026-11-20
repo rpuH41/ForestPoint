@@ -191,5 +191,15 @@
     <string name="download_area_zoom_in">Увеличить масштаб</string>
     <string name="download_area_zoom_out">Уменьшить масштаб</string>
 
+    <string name="weather_loading">Загружаем погоду...</string>
+    <string name="weather_error">Не удалось загрузить погоду</string>
+    <string name="weather_temperature">Температура: %1$s °C</string>
+    <string name="weather_humidity">Влажность: %1$d %%</string>
+    <string name="weather_avg_temperature">Средняя температура за 5 дней: %1$s °C</string>
+    <string name="weather_avg_humidity">Средняя влажность за 5 дней: %1$d %%</string>
+    <string name="weather_rain">Осадки за 5 дней: %1$s мм</string>
+
+    <string name="distance_unit_km">км</string>
+
 
 </resources>

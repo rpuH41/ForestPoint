@@ -190,5 +190,13 @@
     <string name="download_area_zoom_in">Zoom in</string>
     <string name="download_area_zoom_out">Zoom out</string>
 
+    <string name="weather_loading">Loading weather...</string>
+    <string name="weather_error">Unable to load weather</string>
+    <string name="weather_temperature">Temperature: %1$s °C</string>
+    <string name="weather_humidity">Humidity: %1$d %%</string>
+    <string name="weather_avg_temperature">Average temperature over 5 days: %1$s °C</string>
+    <string name="weather_avg_humidity">Average humidity over 5 days: %1$d %%</string>
+    <string name="weather_rain">Precipitation over 5 days: %1$s mm</string>
 
+    <string name="distance_unit_km">km</string>
 </resources>
