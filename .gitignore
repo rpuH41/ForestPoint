@@ -9,5 +9,7 @@
 .externalNativeBuild
 /.kotlin/
 .cxx
+**/xcuserdata/
+**/*.xcuserstate
 app/florapoint
 /app/google-services.json

@@ -200,6 +200,17 @@
     <string name="weather_rain">Осадки за 5 дней: %1$s мм</string>
 
     <string name="distance_unit_km">км</string>
+    <string name="osm_attribution">© OpenStreetMap contributors</string>
+    <string name="new_location">Новая точка</string>
+    <string name="type">Тип</string>
+    <string name="title">Название</string>
+    <string name="save">Сохранить</string>
+    <string name="category_other">Другое</string>
+    <string name="location_features_notes">Место, особенности, заметки...</string>
+    <string name="map_save_error">Не удалось сохранить точку</string>
 
 
+    <string name="map_edit_location">Редактировать точку</string>
+    <string name="map_action_failed">Не удалось изменить или удалить точку</string>
+    <string name="map_ok">ОК</string>
 </resources>

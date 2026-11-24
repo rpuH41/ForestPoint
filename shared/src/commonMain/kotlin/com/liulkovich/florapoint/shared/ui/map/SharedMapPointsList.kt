@@ -40,6 +40,7 @@ fun SharedMapPointsList(
     onPointLongClick: (SharedMapPoint) -> Unit,
     onEdit: (SharedMapPoint) -> Unit,
     onDelete: (SharedMapPoint) -> Unit,
+    showActions: Boolean = true,
     onShare: (SharedMapPoint) -> Unit,
     formatDate: (Long) -> String,
     formatDistance: (Double) -> String,
@@ -152,6 +153,8 @@ fun SharedMapPointsList(
                     onLongClick = {
                         onPointLongClick(point)
                     },
+
+                    showActions = showActions,
 
                     onEdit = {
                         onEdit(point)

@@ -11,7 +11,7 @@ import com.liulkovich.florapoint.shared.domain.SharedSpeciesConditions
 import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
-private fun floraDatabasePath(): String {
+internal fun floraDatabasePath(): String {
     val directory = NSFileManager.defaultManager.URLForDirectory(
         directory = NSApplicationSupportDirectory,
         inDomain = NSUserDomainMask,
@@ -114,7 +114,7 @@ fun loadFloraSpecies(): List<ReferenceModel> {
     return species
 }
 
-fun loadRandomFloraTip(language: String = "ru"): String? {
+fun loadRandomFloraTip(language: String): String? {
     val driver = BundledSQLiteDriver()
 
     driver.open(floraDatabasePath()).use { connection ->

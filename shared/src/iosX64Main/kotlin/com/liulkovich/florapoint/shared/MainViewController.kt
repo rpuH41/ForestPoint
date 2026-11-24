@@ -1,4 +1,3 @@
-
 package com.liulkovich.florapoint.shared
 
 import androidx.compose.foundation.Image
@@ -6,6 +5,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.background
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import com.liulkovich.florapoint.shared.generated.resources.map_action_failed
+import com.liulkovich.florapoint.shared.generated.resources.map_ok
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.liulkovich.florapoint.shared.ui.map.SharedMapNavigationControls
+import com.liulkovich.florapoint.shared.generated.resources.osm_attribution
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +41,9 @@ import com.liulkovich.florapoint.shared.domain.calculateSharedForecast
 import com.liulkovich.florapoint.shared.domain.countSeasonDaysLeft
 import com.liulkovich.florapoint.shared.domain.loadSharedWeather
 import com.liulkovich.florapoint.shared.generated.resources.Res
+import com.liulkovich.florapoint.shared.generated.resources.map
+import com.liulkovich.florapoint.shared.generated.resources.settings_screen_title
+import com.liulkovich.florapoint.shared.generated.resources.forecast_title
 import com.liulkovich.florapoint.shared.generated.resources.berry
 import com.liulkovich.florapoint.shared.generated.resources.mushroom
 import com.liulkovich.florapoint.shared.generated.resources.nut
@@ -52,14 +67,46 @@ import platform.UIKit.UIViewController
 import kotlinx.coroutines.async
 import com.liulkovich.florapoint.shared.domain.SharedSocialForecastSessionCache
 import com.liulkovich.florapoint.shared.domain.SharedSocialForecastError
+import com.liulkovich.florapoint.shared.domain.SharedMapPoint
+import com.liulkovich.florapoint.shared.domain.localizedName
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
+import com.liulkovich.florapoint.shared.domain.SharedUserPoint
+import com.liulkovich.florapoint.shared.ui.map.SharedAddMapPointSheet
+import com.liulkovich.florapoint.shared.ui.map.SharedMapActionButtons
+import kotlin.time.Clock
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.VerticalDivider
+import com.liulkovich.florapoint.shared.domain.SharedMapPointsState
+import com.liulkovich.florapoint.shared.ui.map.SharedMapPointsList
+import platform.Foundation.NSDateFormatter
 
+
+import androidx.compose.foundation.layout.Arrangement
+import com.liulkovich.florapoint.shared.ui.map.SharedMapLayerMenu
+import com.liulkovich.florapoint.shared.domain.SharedMapSettings
+
+@OptIn(ExperimentalMaterial3Api::class)
 fun MainViewController(
-    socialGateway: SharedSocialForecastGateway
+    socialGateway: SharedSocialForecastGateway,
+    mapBridge: IosMapBridge
 ): UIViewController =
     ComposeUIViewController {
 
         var currentRoute by remember {
             mutableStateOf("Home")
+        }
+
+        val language = remember {
+            currentIosLanguage()
         }
 
         var weather by remember {
@@ -70,6 +117,10 @@ fun MainViewController(
             mutableStateOf(SharedForecastScreenState())
         }
 
+        var mapSettings by remember {
+            mutableStateOf(SharedMapSettings())
+        }
+
         val socialForecastCache = remember {
             SharedSocialForecastSessionCache()
         }
@@ -77,11 +128,6 @@ fun MainViewController(
         var weatherLoading by remember {
             mutableStateOf(false)
         }
-
-
-
-
-
 
         var allFloraSpecies by remember {
             mutableStateOf(loadFloraSpecies())
@@ -128,11 +174,11 @@ fun MainViewController(
             mutableStateOf<Set<String>>(emptySet())
         }
 
-        val tipText = remember {
-            loadRandomFloraTip(language = "ru")
+        val tipText = remember(language) {
+            loadRandomFloraTip(language = language)
         }
 
-        LaunchedEffect(currentRoute) {
+        LaunchedEffect(currentRoute, language) {
 
             if (currentRoute != "Forecast") {
                 return@LaunchedEffect
@@ -143,8 +189,6 @@ fun MainViewController(
             )
 
             try {
-                // Временно: тестовые координаты Москвы.
-                // Позже заменим на CLLocationManager.
 
                 val location = withTimeoutOrNull(30_000L) {
                     requestIosCoordinates()
@@ -177,8 +221,6 @@ fun MainViewController(
                     )
                     return@LaunchedEffect
                 }
-
-                val language = "ru"
 
                 val cachedSocial = socialForecastCache.get(
                     latitude = location.latitude,
@@ -301,7 +343,7 @@ fun MainViewController(
         ) {
 
 
-        Scaffold(
+            Scaffold(
                 bottomBar = {
                     if (currentRoute != "Detail") {
                         ForestPointBottomBar(
@@ -360,7 +402,7 @@ fun MainViewController(
                                 selectedSeasonCategory = selectedSeasonCategory
                             ),
 
-                            language = "ru",
+                            language = language,
 
 
                             notificationEnabledIds = allFloraSpecies
@@ -500,7 +542,7 @@ fun MainViewController(
                                     isLoading = false
                                 ),
 
-                                language = "ru",
+                                language = language,
 
                                 onCommand = { command ->
                                     when (command) {
@@ -567,7 +609,7 @@ fun MainViewController(
                                     resolvedLookAlikes = emptyMap()
                                 ),
 
-                                language = "ru",
+                                language = language,
 
 
                                 onBack = {
@@ -597,11 +639,519 @@ fun MainViewController(
                     }
 
 
+                    "Map" -> {
+                        val mapScope = rememberCoroutineScope()
+
+                        var pointsRevision by remember {
+                            mutableIntStateOf(0)
+                        }
+
+                        var pendingAddLocation by remember {
+                            mutableStateOf<Pair<Double, Double>?>(null)
+                        }
+
+                        var saveFailed by remember {
+                            mutableStateOf(false)
+                        }
+
+                        var mapSearchQuery by remember {
+                            mutableStateOf("")
+                        }
+
+                        var selectedMapPointKey by remember {
+                            mutableStateOf<String?>(null)
+                        }
+
+                        var editingPoint by remember {
+                            mutableStateOf<SharedUserPoint?>(null)
+                        }
+
+                        var editSaveFailed by remember {
+                            mutableStateOf(false)
+                        }
+
+                        var mapActionFailed by remember {
+                            mutableStateOf(false)
+                        }
+
+                        DisposableEffect(mapBridge) {
+                            val listener = object : IosMapTapListener {
+                                override fun onMapTap(
+                                    latitude: Double,
+                                    longitude: Double
+                                ) {
+                                    saveFailed = false
+                                    pendingAddLocation = latitude to longitude
+                                }
+                            }
+
+                            mapBridge.setMapTapListener(listener)
+
+                            onDispose {
+                                mapBridge.setMapTapListener(null)
+                            }
+                        }
+
+                        val mapPoints = remember(
+                            allFloraSpecies,
+                            language,
+                            pointsRevision
+                        ) {
+
+                            val speciesById = allFloraSpecies.associateBy { it.id }
+
+                            loadIosUserPoints().map { point ->
+
+                                val reference = point.speciesId?.let { speciesId ->
+                                    speciesById[speciesId]
+                                }
+
+                                val displayName = reference
+                                    ?.localizedName(language)
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?: point.userName
+
+                                SharedMapPoint(
+                                    key = "local_${point.id}",
+                                    id = point.id,
+                                    speciesId = point.speciesId,
+
+                                    displayName = displayName,
+                                    userName = point.userName,
+                                    description = point.description,
+
+                                    category = point.category
+                                        ?.takeIf { it.isNotBlank() }
+                                        ?: reference?.category
+                                        ?: "custom",
+
+                                    latitude = point.latitude,
+                                    longitude = point.longitude,
+                                    timestampSeconds = point.timestamp,
+
+                                    isOwner = true,
+                                    isPublic = point.isPublic,
+
+                                    temperature = point.temperature,
+                                    humidity = point.humidity,
+                                    avgTemp5Days = point.avgTemp5Days,
+                                    avgHumidity5Days = point.avgHumidity5Days
+                                )
+                            }
+                        }
+
+                        LaunchedEffect(mapBridge, mapPoints) {
+                            mapBridge.updatePoints(mapPoints)
+                        }
+
+
+                        LaunchedEffect(mapBridge) {
+                            val location = withTimeoutOrNull(30_000L) {
+                                requestIosCoordinates()
+                            }
+
+                            location?.let {
+                                mapBridge.centerOn(
+                                    latitude = it.latitude,
+                                    longitude = it.longitude
+                                )
+                            }
+                        }
+
+
+                        val dateFormatter = remember {
+                            NSDateFormatter().apply {
+                                dateFormat = "dd.MM.yyyy"
+                            }
+                        }
+
+                        val listPoints = mapPoints.map { point ->
+                            point.copy(
+                                isSelected = point.key == selectedMapPointKey
+                            )
+                        }
+
+                        val mapPanel: @Composable (Modifier, Boolean) -> Unit =
+                            { panelModifier, isLandscape ->
+
+                                Box(modifier = panelModifier) {
+
+                                    IosOsmMapContent(
+                                        mapBridge = mapBridge,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(8.dp)
+                                    )
+
+
+                                    SharedMapLayerMenu(
+                                        settings = mapSettings,
+                                        onProviderSelected = { provider ->
+                                            mapSettings = mapSettings.copy(
+                                                provider = provider
+                                            )
+                                        },
+                                        onGoogleLayerSelected = { layer ->
+                                            mapSettings = mapSettings.copy(
+                                                googleLayer = layer
+                                            )
+                                        },
+                                        showGoogleProvider = false,
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(16.dp),
+                                        isLandscape = isLandscape
+                                    )
+
+
+                                    Column(
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(
+                                                end = 16.dp,
+                                                bottom = 16.dp
+                                            ),
+                                        horizontalAlignment = Alignment.End,
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        SharedMapNavigationControls(
+                                            onMyLocation = {
+                                                mapScope.launch {
+                                                    val location = withTimeoutOrNull(30_000L) {
+                                                        requestIosCoordinates()
+                                                    }
+
+                                                    location?.let {
+                                                        mapBridge.centerOn(
+                                                            latitude = it.latitude,
+                                                            longitude = it.longitude
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            onZoomIn = {
+                                                mapBridge.zoomIn()
+                                            },
+                                            onZoomOut = {
+                                                mapBridge.zoomOut()
+                                            },
+                                            isLandscape = isLandscape
+                                        )
+
+                                        SharedMapActionButtons(
+                                            isAuthorized = false,
+                                            showOnlyMyPoints = true,
+                                            onAddPoint = {
+                                                mapScope.launch {
+                                                    val location = withTimeoutOrNull(30_000L) {
+                                                        requestIosCoordinates()
+                                                    }
+
+                                                    location?.let {
+                                                        saveFailed = false
+                                                        pendingAddLocation =
+                                                            it.latitude to it.longitude
+                                                    }
+                                                }
+                                            },
+                                            onToggleFilter = {},
+                                            isLandscape = isLandscape
+                                        )
+                                    }
+
+
+                                    Text(
+                                        text = stringResource(
+                                            Res.string.osm_attribution
+                                        ),
+                                        fontSize = 10.sp,
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .align(Alignment.BottomStart)
+                                            .padding(12.dp)
+                                            .background(
+                                                Color.White.copy(alpha = 0.8f)
+                                            )
+                                            .padding(
+                                                horizontal = 5.dp,
+                                                vertical = 3.dp
+                                            )
+                                    )
+                                }
+                            }
+
+                        val pointsPanel: @Composable (Modifier) -> Unit =
+                            { panelModifier ->
+
+                                SharedMapPointsList(
+                                    state = SharedMapPointsState(
+                                        points = listPoints,
+                                        searchQuery = mapSearchQuery,
+                                        selectedPointKey = selectedMapPointKey
+                                    ),
+                                    onSearchQueryChange = { query ->
+                                        mapSearchQuery = query
+                                    },
+                                    onPointClick = { point ->
+                                        selectedMapPointKey = point.key
+
+                                        mapBridge.centerOn(
+                                            latitude = point.latitude,
+                                            longitude = point.longitude
+                                        )
+                                    },
+                                    onPointLongClick = { point ->
+                                        selectedMapPointKey = point.key
+
+                                        mapBridge.centerOn(
+                                            latitude = point.latitude,
+                                            longitude = point.longitude
+                                        )
+                                    },
+
+
+                                    onEdit = { point ->
+                                        try {
+                                            val original = loadIosUserPoints()
+                                                .firstOrNull { it.id == point.id }
+
+                                            if (original != null) {
+                                                editSaveFailed = false
+                                                editingPoint = original
+                                            } else {
+                                                mapActionFailed = true
+                                            }
+                                        } catch (e: Exception) {
+                                            println("Map edit open failed: $e")
+                                            mapActionFailed = true
+                                        }
+                                    },
+
+                                    onDelete = { point ->
+                                        try {
+                                            val deleted = deleteIosUserPoint(point.id)
+
+                                            if (deleted) {
+                                                if (selectedMapPointKey == point.key) {
+                                                    selectedMapPointKey = null
+                                                }
+
+                                                pointsRevision++
+                                            } else {
+                                                mapActionFailed = true
+                                            }
+                                        } catch (e: Exception) {
+                                            println("Map delete failed: $e")
+                                            mapActionFailed = true
+                                        }
+                                    },
+
+                                    onShare = { point ->
+                                        mapBridge.sharePoint(
+                                            latitude = point.latitude,
+                                            longitude = point.longitude,
+                                            title = point.displayName
+                                        )
+                                    },
+
+                                    showActions = true,
+
+
+                                    formatDate = { seconds ->
+                                        dateFormatter.stringFromDate(
+                                            NSDate(
+                                                timeIntervalSinceReferenceDate =
+                                                    seconds.toDouble() - 978_307_200.0
+                                            )
+                                        )
+                                    },
+                                    formatDistance = { distance ->
+                                        distance.toString()
+                                    },
+
+                                    modifier = panelModifier
+                                )
+                            }
+
+                        BoxWithConstraints(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                        ) {
+                            val isLandscape = maxWidth > maxHeight
+
+                            if (isLandscape) {
+                                Row(Modifier.fillMaxSize()) {
+
+                                    mapPanel(
+                                        Modifier
+                                            .weight(2f)
+                                            .fillMaxHeight(),
+                                        true
+                                    )
+
+                                    VerticalDivider()
+
+                                    pointsPanel(
+                                        Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()
+                                    )
+                                }
+                            } else {
+                                Column(Modifier.fillMaxSize()) {
+
+                                    mapPanel(
+                                        Modifier
+                                            .weight(2f)
+                                            .fillMaxWidth(),
+                                        false
+                                    )
+
+                                    HorizontalDivider()
+
+                                    pointsPanel(
+                                        Modifier
+                                            .weight(1f)
+                                            .fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                        pendingAddLocation?.let { (latitude, longitude) ->
+
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    pendingAddLocation = null
+                                }
+                            ) {
+                                SharedAddMapPointSheet(
+                                    species = allFloraSpecies,
+                                    language = language,
+                                    saveFailed = saveFailed,
+
+                                    onSave = { speciesId, name, description, category ->
+
+                                        try {
+                                            insertIosUserPoint(
+                                                SharedUserPoint(
+                                                    speciesId = speciesId,
+                                                    latitude = latitude,
+                                                    longitude = longitude,
+                                                    userName = name,
+                                                    description = description,
+                                                    timestamp = Clock.System.now().epochSeconds,
+                                                    category = category
+                                                )
+                                            )
+
+                                            pointsRevision++
+                                            pendingAddLocation = null
+                                            saveFailed = false
+
+                                        } catch (e: Exception) {
+                                            println("Map point save failed: $e")
+                                            saveFailed = true
+                                        }
+                                    },
+
+                                    onDismiss = {
+                                        pendingAddLocation = null
+                                    }
+                                )
+                            }
+                        }
+
+
+                        editingPoint?.let { original ->
+
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    editingPoint = null
+                                }
+                            ) {
+                                SharedAddMapPointSheet(
+                                    species = allFloraSpecies,
+                                    language = language,
+                                    initialPoint = original,
+                                    saveFailed = editSaveFailed,
+
+                                    onSave = {
+                                            speciesId,
+                                            name,
+                                            description,
+                                            category ->
+
+                                        try {
+                                            val updated = updateIosUserPoint(
+                                                original.copy(
+                                                    speciesId = speciesId,
+                                                    userName = name,
+                                                    description = description,
+                                                    category = category
+                                                )
+                                            )
+
+                                            if (updated) {
+                                                pointsRevision++
+                                                editingPoint = null
+                                                editSaveFailed = false
+                                            } else {
+                                                editSaveFailed = true
+                                            }
+
+                                        } catch (e: Exception) {
+                                            println("Map point update failed: $e")
+                                            editSaveFailed = true
+                                        }
+                                    },
+
+                                    onDismiss = {
+                                        editingPoint = null
+                                    }
+                                )
+                            }
+                        }
+
+                        if (mapActionFailed) {
+                            AlertDialog(
+                                onDismissRequest = {
+                                    mapActionFailed = false
+                                },
+
+                                title = {
+                                    Text(
+                                        stringResource(
+                                            Res.string.map_action_failed
+                                        )
+                                    )
+                                },
+
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            mapActionFailed = false
+                                        }
+                                    ) {
+                                        Text(
+                                            stringResource(
+                                                Res.string.map_ok
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        }
+
+
+
+                    }
+
 
                     "Forecast" -> {
                         SharedForecastScreen(
                             state = forecastState,
-                            language = "ru",
+                            language = language,
 
                             onClickDetail = { speciesId ->
                                 detailReturnRoute = "Forecast"
@@ -631,9 +1181,9 @@ fun MainViewController(
                         ) {
                             Text(
                                 text = when (currentRoute) {
-                                    "Map" -> "🗺️ Карта ForestPoint"
-                                    "Settings" -> "⚙️ Настройки"
-                                    "Forecast" -> "🍄 Прогноз"
+                                    "Map" -> stringResource(Res.string.map)
+                                    "Settings" -> stringResource(Res.string.settings_screen_title)
+                                    "Forecast" -> stringResource(Res.string.forecast_title)
                                     else -> "ForestPoint"
                                 }
                             )

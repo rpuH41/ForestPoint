@@ -58,6 +58,7 @@ fun SharedMapPointCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onEdit: () -> Unit,
+    showActions: Boolean = true,
     onDelete: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier
@@ -191,6 +192,7 @@ fun SharedMapPointCard(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
+                    if (showActions) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
@@ -233,6 +235,7 @@ fun SharedMapPointCard(
                             }
                         }
                     }
+                }
                 }
             }
         }

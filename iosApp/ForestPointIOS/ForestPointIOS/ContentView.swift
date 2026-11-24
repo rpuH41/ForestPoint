@@ -9,7 +9,8 @@ struct ComposeView: UIViewControllerRepresentable {
     ) -> UIViewController {
 
         return MainViewControllerKt.MainViewController(
-            socialGateway: IosSocialForecastService()
+            socialGateway: IosSocialForecastService(),
+            mapBridge: IosOsmMapView()
         )
     }
 

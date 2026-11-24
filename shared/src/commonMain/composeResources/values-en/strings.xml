@@ -199,4 +199,16 @@
     <string name="weather_rain">Precipitation over 5 days: %1$s mm</string>
 
     <string name="distance_unit_km">km</string>
+    <string name="osm_attribution">© OpenStreetMap contributors</string>
+    <string name="new_location">New location</string>
+    <string name="type">Type</string>
+    <string name="title">Title</string>
+    <string name="save">Save</string>
+    <string name="category_other">Other</string>
+    <string name="location_features_notes">Location, features, notes...</string>
+    <string name="map_save_error">Could not save the point</string>
+
+    <string name="map_edit_location">Edit location</string>
+    <string name="map_action_failed">Could not edit or delete the point</string>
+    <string name="map_ok">OK</string>
 </resources>

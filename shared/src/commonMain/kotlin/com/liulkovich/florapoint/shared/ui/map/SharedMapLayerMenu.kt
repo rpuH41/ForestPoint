@@ -39,6 +39,7 @@ fun SharedMapLayerMenu(
     onProviderSelected: (SharedMapProvider) -> Unit,
     onGoogleLayerSelected: (SharedGoogleMapLayer) -> Unit,
     modifier: Modifier = Modifier,
+    showGoogleProvider: Boolean = true,
     isLandscape: Boolean = false
 ) {
     var expanded by remember {
@@ -115,7 +116,7 @@ fun SharedMapLayerMenu(
                     expanded = false
                 }
             )
-
+            if (showGoogleProvider) {
             DropdownMenuItem(
                 text = {
                     val title = stringResource(
@@ -140,8 +141,12 @@ fun SharedMapLayerMenu(
                     expanded = false
                 }
             )
+        }
 
-            if (settings.provider == SharedMapProvider.GOOGLE) {
+            if (
+                showGoogleProvider &&
+                settings.provider == SharedMapProvider.GOOGLE
+            ) {
                 HorizontalDivider()
 
                 SharedGoogleMapLayer.entries.forEach { layer ->
