@@ -342,7 +342,13 @@ private fun SharedMapPointWeather(
             }
         } else {
             Text(
-                text = stringResource(Res.string.loadingl_eather),
+                text = stringResource(
+                    if (point.isWeatherLoading) {
+                        Res.string.loadingl_eather
+                    } else {
+                        Res.string.no_weather_data
+                    }
+                ),
                 style = MaterialTheme.typography.labelSmall
             )
         }

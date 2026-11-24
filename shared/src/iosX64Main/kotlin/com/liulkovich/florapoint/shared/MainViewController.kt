@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.background
+import com.liulkovich.florapoint.shared.ui.map.SharedMapWeatherBanner
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import com.liulkovich.florapoint.shared.generated.resources.map_action_failed
 import com.liulkovich.florapoint.shared.generated.resources.map_ok
+import androidx.compose.runtime.mutableStateMapOf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.liulkovich.florapoint.shared.ui.map.SharedMapNavigationControls
@@ -642,6 +646,14 @@ fun MainViewController(
                     "Map" -> {
                         val mapScope = rememberCoroutineScope()
 
+                        var mapWeather by remember {
+                            mutableStateOf<SharedWeatherData?>(null)
+                        }
+
+                        val weatherLoadingPointIds = remember {
+                            mutableStateMapOf<Int, Boolean>()
+                        }
+
                         var pointsRevision by remember {
                             mutableIntStateOf(0)
                         }
@@ -745,6 +757,7 @@ fun MainViewController(
                         }
 
 
+
                         LaunchedEffect(mapBridge) {
                             val location = withTimeoutOrNull(30_000L) {
                                 requestIosCoordinates()
@@ -755,8 +768,16 @@ fun MainViewController(
                                     latitude = it.latitude,
                                     longitude = it.longitude
                                 )
+
+                                mapWeather = withTimeoutOrNull(20_000L) {
+                                    loadSharedWeather(
+                                        latitude = it.latitude,
+                                        longitude = it.longitude
+                                    )
+                                }
                             }
                         }
+
 
 
                         val dateFormatter = remember {
@@ -767,7 +788,8 @@ fun MainViewController(
 
                         val listPoints = mapPoints.map { point ->
                             point.copy(
-                                isSelected = point.key == selectedMapPointKey
+                                isSelected = point.key == selectedMapPointKey,
+                                isWeatherLoading = weatherLoadingPointIds[point.id] == true
                             )
                         }
 
@@ -783,6 +805,18 @@ fun MainViewController(
                                             .padding(8.dp)
                                     )
 
+                                    mapWeather?.let { currentWeather ->
+                                        SharedMapWeatherBanner(
+                                            weather = currentWeather,
+                                            modifier = Modifier
+                                                .align(Alignment.TopCenter)
+                                                .padding(
+                                                    top = 8.dp,
+                                                    start = 8.dp,
+                                                    end = 8.dp
+                                                )
+                                        )
+                                    }
 
                                     SharedMapLayerMenu(
                                         settings = mapSettings,
@@ -799,7 +833,10 @@ fun MainViewController(
                                         showGoogleProvider = false,
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
-                                            .padding(16.dp),
+                                            .padding(
+                                                top = 72.dp,
+                                                end = 16.dp
+                                            ),
                                         isLandscape = isLandscape
                                     )
 
@@ -1030,10 +1067,10 @@ fun MainViewController(
                                     language = language,
                                     saveFailed = saveFailed,
 
-                                    onSave = { speciesId, name, description, category ->
 
+                                    onSave = { speciesId, name, description, category ->
                                         try {
-                                            insertIosUserPoint(
+                                            val savedId = insertIosUserPoint(
                                                 SharedUserPoint(
                                                     speciesId = speciesId,
                                                     latitude = latitude,
@@ -1043,17 +1080,55 @@ fun MainViewController(
                                                     timestamp = Clock.System.now().epochSeconds,
                                                     category = category
                                                 )
-                                            )
+                                            ).toInt()
 
                                             pointsRevision++
                                             pendingAddLocation = null
                                             saveFailed = false
+
+                                            weatherLoadingPointIds[savedId] = true
+
+                                            mapScope.launch {
+                                                try {
+                                                    val weather = withTimeoutOrNull(25_000L) {
+                                                        loadSharedWeather(
+                                                            latitude = latitude,
+                                                            longitude = longitude
+                                                        )
+                                                    }
+
+                                                    if (weather != null) {
+                                                        val updated = withContext(Dispatchers.Default) {
+                                                            updateIosUserPointWeather(
+                                                                id = savedId,
+                                                                weather = weather,
+                                                                timestampMillis =
+                                                                    Clock.System.now().epochSeconds * 1000L
+                                                            )
+                                                        }
+
+                                                        if (updated) {
+                                                            pointsRevision++
+                                                        }
+                                                    }
+
+                                                } catch (e: CancellationException) {
+                                                    throw e
+
+                                                } catch (e: Exception) {
+                                                    println("Map point weather failed: $e")
+
+                                                } finally {
+                                                    weatherLoadingPointIds.remove(savedId)
+                                                }
+                                            }
 
                                         } catch (e: Exception) {
                                             println("Map point save failed: $e")
                                             saveFailed = true
                                         }
                                     },
+
 
                                     onDismiss = {
                                         pendingAddLocation = null

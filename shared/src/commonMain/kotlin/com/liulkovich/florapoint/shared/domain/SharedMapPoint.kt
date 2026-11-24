@@ -5,7 +5,6 @@ data class SharedMapPoint(
     val key: String,
     val id: Int,
     val speciesId: Int?,
-
     val displayName: String,
     val userName: String,
     val description: String,
@@ -23,7 +22,8 @@ data class SharedMapPoint(
     val temperature: Double? = null,
     val humidity: Int? = null,
     val avgTemp5Days: Double? = null,
-    val avgHumidity5Days: Int? = null
+    val avgHumidity5Days: Int? = null,
+    val isWeatherLoading: Boolean = false
 )
 
 data class SharedMapPointsState(

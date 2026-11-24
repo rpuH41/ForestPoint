@@ -2,6 +2,7 @@ package com.liulkovich.florapoint.shared
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.liulkovich.florapoint.shared.domain.SharedUserPoint
+import com.liulkovich.florapoint.shared.domain.SharedWeatherData
 
 /** Writes a new private, local point using the same flora.db as the species guide. */
 fun insertIosUserPoint(point: SharedUserPoint): Long {
@@ -34,6 +35,45 @@ fun insertIosUserPoint(point: SharedUserPoint): Long {
         connection.prepare("SELECT last_insert_rowid()").use { statement ->
             check(statement.step())
             return statement.getLong(0)
+        }
+    }
+}
+
+
+fun updateIosUserPointWeather(
+    id: Int,
+    weather: SharedWeatherData,
+    timestampMillis: Long
+): Boolean {
+    require(id > 0)
+
+    BundledSQLiteDriver().open(floraDatabasePath()).use { connection ->
+        connection.prepare(
+            """
+            UPDATE user_points_table
+            SET
+                temperature = ?,
+                humidity = ?,
+                avg_temp_5days = ?,
+                avg_humidity_5days = ?,
+                weather_timestamp = ?
+            WHERE id = ?
+              AND cloud_id IS NULL
+              AND weather_timestamp IS NULL
+            """.trimIndent()
+        ).use { statement ->
+            statement.bindDouble(1, weather.temperature)
+            statement.bindLong(2, weather.humidity.toLong())
+            statement.bindDouble(3, weather.avgTemp5Days)
+            statement.bindLong(4, weather.avgHumidity5Days.toLong())
+            statement.bindLong(5, timestampMillis)
+            statement.bindLong(6, id.toLong())
+            statement.step()
+        }
+
+        connection.prepare("SELECT changes()").use { statement ->
+            check(statement.step())
+            return statement.getLong(0) > 0L
         }
     }
 }
