@@ -831,13 +831,15 @@ fun MainViewController(
                                             )
                                         },
                                         showGoogleProvider = false,
+
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
                                             .padding(
-                                                top = 72.dp,
+                                                top = if (isLandscape) 8.dp else 72.dp,
                                                 end = 16.dp
                                             ),
                                         isLandscape = isLandscape
+
                                     )
 
 
