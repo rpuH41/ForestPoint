@@ -32,6 +32,10 @@ interface IosMapBridge {
     )
 }
 
+interface IosGoogleMapBridge : IosMapBridge {
+    fun setGoogleLayer(layerKey: String)
+}
+
 @Composable
 fun IosOsmMapContent(
     mapBridge: IosMapBridge,

@@ -10,7 +10,9 @@ struct ComposeView: UIViewControllerRepresentable {
 
         return MainViewControllerKt.MainViewController(
             socialGateway: IosSocialForecastService(),
-            mapBridge: IosOsmMapView()
+            mapBridge: IosOsmMapView(),
+            googleMapBridge: IosGoogleMapView(),
+            googleMapsEnabled: ForestPointGoogleMapsSetup.enabled
         )
     }
 

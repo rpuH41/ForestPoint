@@ -21,8 +21,12 @@ kotlin {
     }
 
 
-    iosX64 {
-        binaries.framework {
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { target ->
+        target.binaries.framework {
             baseName = "ForestPointShared"
             isStatic = true
             linkerOpts.add("-lsqlite3")
@@ -44,7 +48,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
         }
 
-        iosX64Main.dependencies {
+        iosMain.dependencies {
             implementation(libs.androidx.room.runtime)
             implementation("androidx.sqlite:sqlite-bundled:2.6.2")
         }

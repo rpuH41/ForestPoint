@@ -14,6 +14,8 @@ import androidx.compose.material3.TextButton
 import com.liulkovich.florapoint.shared.generated.resources.map_action_failed
 import com.liulkovich.florapoint.shared.generated.resources.map_ok
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.key
+import com.liulkovich.florapoint.shared.domain.SharedMapProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.compose.ui.unit.dp
@@ -101,7 +103,9 @@ import com.liulkovich.florapoint.shared.domain.SharedMapSettings
 @OptIn(ExperimentalMaterial3Api::class)
 fun MainViewController(
     socialGateway: SharedSocialForecastGateway,
-    mapBridge: IosMapBridge
+    mapBridge: IosMapBridge,
+    googleMapBridge: IosGoogleMapBridge,
+    googleMapsEnabled: Boolean
 ): UIViewController =
     ComposeUIViewController {
 
@@ -646,6 +650,16 @@ fun MainViewController(
                     "Map" -> {
                         val mapScope = rememberCoroutineScope()
 
+                        val activeMapBridge: IosMapBridge =
+                            if (
+                                googleMapsEnabled &&
+                                mapSettings.provider == SharedMapProvider.GOOGLE
+                            ) {
+                                googleMapBridge
+                            } else {
+                                mapBridge
+                            }
+
                         var mapWeather by remember {
                             mutableStateOf<SharedWeatherData?>(null)
                         }
@@ -686,7 +700,7 @@ fun MainViewController(
                             mutableStateOf(false)
                         }
 
-                        DisposableEffect(mapBridge) {
+                        DisposableEffect(activeMapBridge) {
                             val listener = object : IosMapTapListener {
                                 override fun onMapTap(
                                     latitude: Double,
@@ -697,10 +711,10 @@ fun MainViewController(
                                 }
                             }
 
-                            mapBridge.setMapTapListener(listener)
+                            activeMapBridge.setMapTapListener(listener)
 
                             onDispose {
-                                mapBridge.setMapTapListener(null)
+                                activeMapBridge.setMapTapListener(null)
                             }
                         }
 
@@ -752,19 +766,19 @@ fun MainViewController(
                             }
                         }
 
-                        LaunchedEffect(mapBridge, mapPoints) {
-                            mapBridge.updatePoints(mapPoints)
+                        LaunchedEffect(activeMapBridge, mapPoints) {
+                            activeMapBridge.updatePoints(mapPoints)
                         }
 
 
 
-                        LaunchedEffect(mapBridge) {
+                        LaunchedEffect(activeMapBridge) {
                             val location = withTimeoutOrNull(30_000L) {
                                 requestIosCoordinates()
                             }
 
                             location?.let {
-                                mapBridge.centerOn(
+                                activeMapBridge.centerOn(
                                     latitude = it.latitude,
                                     longitude = it.longitude
                                 )
@@ -798,12 +812,14 @@ fun MainViewController(
 
                                 Box(modifier = panelModifier) {
 
-                                    IosOsmMapContent(
-                                        mapBridge = mapBridge,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(8.dp)
-                                    )
+                                    key(mapSettings.provider) {
+                                        IosOsmMapContent(
+                                            mapBridge = activeMapBridge,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(8.dp)
+                                        )
+                                    }
 
                                     mapWeather?.let { currentWeather ->
                                         SharedMapWeatherBanner(
@@ -824,13 +840,19 @@ fun MainViewController(
                                             mapSettings = mapSettings.copy(
                                                 provider = provider
                                             )
+                                            if (provider == SharedMapProvider.GOOGLE) {
+                                                googleMapBridge.setGoogleLayer(
+                                                    mapSettings.googleLayer.name
+                                                )
+                                            }
                                         },
                                         onGoogleLayerSelected = { layer ->
                                             mapSettings = mapSettings.copy(
                                                 googleLayer = layer
                                             )
+                                            googleMapBridge.setGoogleLayer(layer.name)
                                         },
-                                        showGoogleProvider = false,
+                                        showGoogleProvider = googleMapsEnabled,
 
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
@@ -861,7 +883,7 @@ fun MainViewController(
                                                     }
 
                                                     location?.let {
-                                                        mapBridge.centerOn(
+                                                        activeMapBridge.centerOn(
                                                             latitude = it.latitude,
                                                             longitude = it.longitude
                                                         )
@@ -869,10 +891,10 @@ fun MainViewController(
                                                 }
                                             },
                                             onZoomIn = {
-                                                mapBridge.zoomIn()
+                                                activeMapBridge.zoomIn()
                                             },
                                             onZoomOut = {
-                                                mapBridge.zoomOut()
+                                                activeMapBridge.zoomOut()
                                             },
                                             isLandscape = isLandscape
                                         )
@@ -899,23 +921,28 @@ fun MainViewController(
                                     }
 
 
-                                    Text(
-                                        text = stringResource(
-                                            Res.string.osm_attribution
-                                        ),
-                                        fontSize = 10.sp,
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .align(Alignment.BottomStart)
-                                            .padding(12.dp)
-                                            .background(
-                                                Color.White.copy(alpha = 0.8f)
-                                            )
-                                            .padding(
-                                                horizontal = 5.dp,
-                                                vertical = 3.dp
-                                            )
-                                    )
+                                    if (
+                                        mapSettings.provider == SharedMapProvider.OSM ||
+                                        !googleMapsEnabled
+                                    ) {
+                                        Text(
+                                            text = stringResource(
+                                                Res.string.osm_attribution
+                                            ),
+                                            fontSize = 10.sp,
+                                            color = Color.Black,
+                                            modifier = Modifier
+                                                .align(Alignment.BottomStart)
+                                                .padding(12.dp)
+                                                .background(
+                                                    Color.White.copy(alpha = 0.8f)
+                                                )
+                                                .padding(
+                                                    horizontal = 5.dp,
+                                                    vertical = 3.dp
+                                                )
+                                        )
+                                    }
                                 }
                             }
 
@@ -934,7 +961,7 @@ fun MainViewController(
                                     onPointClick = { point ->
                                         selectedMapPointKey = point.key
 
-                                        mapBridge.centerOn(
+                                        activeMapBridge.centerOn(
                                             latitude = point.latitude,
                                             longitude = point.longitude
                                         )
@@ -942,7 +969,7 @@ fun MainViewController(
                                     onPointLongClick = { point ->
                                         selectedMapPointKey = point.key
 
-                                        mapBridge.centerOn(
+                                        activeMapBridge.centerOn(
                                             latitude = point.latitude,
                                             longitude = point.longitude
                                         )
@@ -986,7 +1013,7 @@ fun MainViewController(
                                     },
 
                                     onShare = { point ->
-                                        mapBridge.sharePoint(
+                                        activeMapBridge.sharePoint(
                                             latitude = point.latitude,
                                             longitude = point.longitude,
                                             title = point.displayName

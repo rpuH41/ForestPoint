@@ -13,3 +13,4 @@
 **/*.xcuserstate
 app/florapoint
 /app/google-services.json
+/iosApp/ForestPointIOS/ForestPointIOS/LocalGoogleMaps.plist

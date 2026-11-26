@@ -8,7 +8,10 @@ struct ForestPointIOSApp: App {
     init() {
         FirebaseApp.configure()
 
-            prepareFloraDatabase()
+        let googleMapsEnabled = ForestPointGoogleMapsSetup.enabled
+        print("Google Maps SDK enabled: \(googleMapsEnabled)")
+
+        prepareFloraDatabase()
 
         let speciesCount = IosFloraDatabaseKt.countFloraSpecies()
         print("✅ ForestPoint iOS: \(speciesCount) видов")
