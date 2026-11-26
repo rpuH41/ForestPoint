@@ -54,7 +54,8 @@ fun SharedOfflineRegionsScreen(
     state: SharedOfflineRegionsState,
     onNavigateToDownload: () -> Unit,
     onDeleteRegion: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actionLabel: String? = null
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -157,11 +158,7 @@ fun SharedOfflineRegionsScreen(
                     )
                 },
                 text = {
-                    Text(
-                        stringResource(
-                            Res.string.offline_regions_download
-                        )
-                    )
+                    Text(actionLabel ?: stringResource(Res.string.offline_regions_download))
                 }
             )
         }

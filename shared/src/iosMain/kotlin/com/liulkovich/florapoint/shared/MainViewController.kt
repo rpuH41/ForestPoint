@@ -61,6 +61,12 @@ import com.liulkovich.florapoint.shared.ui.forecast.SharedForecastScreen
 import com.liulkovich.florapoint.shared.ui.guide.SharedGuideScreen
 import com.liulkovich.florapoint.shared.ui.home.SharedHomeScreen
 import com.liulkovich.florapoint.shared.ui.theme.ForestPointSharedTheme
+import com.liulkovich.florapoint.shared.ui.settings.SharedSettingsScreen
+import com.liulkovich.florapoint.shared.ui.notifications.SharedNotificationScreen
+import com.liulkovich.florapoint.shared.domain.SharedNotificationSettingsState
+import com.liulkovich.florapoint.shared.domain.SharedNotificationSpecies
+import com.liulkovich.florapoint.shared.domain.SharedSettingsState
+import com.liulkovich.florapoint.shared.domain.SharedSettingsLanguage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.painterResource
@@ -69,6 +75,7 @@ import platform.Foundation.NSCalendarUnitDay
 import platform.Foundation.NSCalendarUnitMonth
 import platform.Foundation.NSCalendarUnitYear
 import platform.Foundation.NSDate
+import platform.Foundation.NSBundle
 import platform.UIKit.UIViewController
 import kotlinx.coroutines.async
 import com.liulkovich.florapoint.shared.domain.SharedSocialForecastSessionCache
@@ -99,13 +106,20 @@ import platform.Foundation.NSDateFormatter
 import androidx.compose.foundation.layout.Arrangement
 import com.liulkovich.florapoint.shared.ui.map.SharedMapLayerMenu
 import com.liulkovich.florapoint.shared.domain.SharedMapSettings
+import com.liulkovich.florapoint.shared.domain.SharedOfflineRegionsState
+import com.liulkovich.florapoint.shared.ui.settings.SharedOfflineRegionsScreen
+import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun MainViewController(
     socialGateway: SharedSocialForecastGateway,
     mapBridge: IosMapBridge,
     googleMapBridge: IosGoogleMapBridge,
-    googleMapsEnabled: Boolean
+    googleMapsEnabled: Boolean,
+    gpxTransport: IosGpxTransport,
+    offlineMapsBridge: IosOfflineMapsBridge
 ): UIViewController =
     ComposeUIViewController {
 
@@ -113,9 +127,24 @@ fun MainViewController(
             mutableStateOf("Home")
         }
 
-        val language = remember {
+        var settingsLanguage by remember {
+            mutableStateOf(selectedIosSettingsLanguage())
+        }
+        val language = remember(settingsLanguage) {
             currentIosLanguage()
         }
+
+        var notificationPreferences by remember {
+            mutableStateOf(loadIosNotificationPreferences())
+        }
+
+        var notificationPermissionRevision by remember {
+            mutableIntStateOf(0)
+        }
+        var notificationStatusText by remember {
+            mutableStateOf<String?>(null)
+        }
+        val notificationUiScope = rememberCoroutineScope()
 
         var weather by remember {
             mutableStateOf<SharedWeatherData?>(null)
@@ -160,6 +189,30 @@ fun MainViewController(
             }
         }
 
+
+        // Keep native iOS reminders in sync with species and Settings switches.
+        LaunchedEffect(
+            allFloraSpecies,
+            notificationPreferences,
+            language,
+            notificationPermissionRevision
+        ) {
+            synchronizeIosSeasonNotifications(
+                species = allFloraSpecies
+                    .filter { it.isNotifEnabled == 1 }
+                    .map { species ->
+                        SharedNotificationSpecies(
+                            id = species.id,
+                            displayName = species.localizedName(language),
+                            imageName = species.imageName,
+                            startMonth = species.startMonth,
+                            endMonth = species.endMonth
+                        )
+                    },
+                preferences = notificationPreferences,
+                language = language
+            )
+        }
 
         var selectedSeasonCategory by remember {
             mutableStateOf<String?>(null)
@@ -346,16 +399,18 @@ fun MainViewController(
             }
         }
 
-        ForestPointSharedTheme(
-            darkTheme = true
-        ) {
+        // Recreate Compose resources when the in-app language changes.
+        key(settingsLanguage) {
+            ForestPointSharedTheme(
+                darkTheme = true
+            ) {
 
 
             Scaffold(
                 bottomBar = {
                     if (currentRoute != "Detail") {
                         ForestPointBottomBar(
-                            currentRoute = currentRoute,
+                            currentRoute = if (currentRoute == "Notifications") "Settings" else currentRoute,
                             onNavigate = { route ->
                                 currentRoute = route
                             },
@@ -1252,6 +1307,288 @@ fun MainViewController(
                     }
 
 
+                    "Settings" -> {
+                        val gpxScope = rememberCoroutineScope()
+                        var gpxStatus by remember { mutableStateOf<String?>(null) }
+                        var unfinishedAction by remember {
+                            mutableStateOf<String?>(null)
+                        }
+
+                        SharedSettingsScreen(
+                            state = SharedSettingsState(
+                                isAuthorized = false,
+                                language = settingsLanguage,
+                                appVersion = NSBundle.mainBundle
+                                    .objectForInfoDictionaryKey("CFBundleShortVersionString")
+                                    as? String ?: "—"
+                            ),
+                            onGoogleSignIn = { unfinishedAction = "Google Sign-In" },
+                            onLogout = { unfinishedAction = "Выход из аккаунта" },
+                            onDeleteAccount = { unfinishedAction = "Удаление аккаунта" },
+                            onNotifications = { currentRoute = "Notifications" },
+                            onBackup = {
+                                try {
+                                    gpxTransport.shareGpx(exportIosPointsAsGpx())
+                                } catch (e: Exception) {
+                                    gpxStatus = if (language == "ru") {
+                                        "Не удалось создать GPX: ${e.message}"
+                                    } else {
+                                        "Cannot create GPX: ${e.message}"
+                                    }
+                                }
+                            },
+                            onRestore = {
+                                gpxTransport.pickGpx(object : IosGpxImportListener {
+                                    override fun onGpxImportResult(json: String?, error: String?) {
+                                        if (error != null || json == null) {
+                                            gpxScope.launch {
+                                                gpxStatus = error ?: "Invalid GPX"
+                                            }
+                                            return
+                                        }
+                                        gpxScope.launch {
+                                            try {
+                                                val summary = withContext(Dispatchers.Default) {
+                                                    importIosPointsFromGpxJson(json)
+                                                }
+                                                gpxStatus = if (language == "ru") {
+                                                    "Импортировано: ${summary.inserted}. Пропущено дубликатов: ${summary.duplicates}."
+                                                } else {
+                                                    "Imported: ${summary.inserted}. Skipped duplicates: ${summary.duplicates}."
+                                                }
+                                            } catch (e: Exception) {
+                                                gpxStatus = if (language == "ru") {
+                                                    "Ошибка импорта GPX: ${e.message}"
+                                                } else {
+                                                    "GPX import error: ${e.message}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                            },
+                            onOfflineMaps = { currentRoute = "OfflineRegions" },
+                            onPrivacy = { unfinishedAction = "Конфиденциальность" },
+                            onLanguageSelected = { selected ->
+                                setIosSettingsLanguage(selected)
+                                settingsLanguage = selected
+                            },
+                            onContactDeveloper = {
+                                unfinishedAction = "Связь с разработчиком"
+                            },
+                            onRateApp = { unfinishedAction = "Оценить приложение" },
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        unfinishedAction?.let { action ->
+                            AlertDialog(
+                                onDismissRequest = { unfinishedAction = null },
+                                title = { Text(action) },
+                                text = {
+                                    Text(
+                                        if (language == "ru") {
+                                            "Эту функцию подключим на следующем этапе переноса iOS."
+                                        } else {
+                                            "This feature will be connected in a later iOS migration step."
+                                        }
+                                    )
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = { unfinishedAction = null }) {
+                                        Text(if (language == "ru") "Понятно" else "OK")
+                                    }
+                                }
+                            )
+                        }
+                        gpxStatus?.let { status ->
+                            AlertDialog(
+                                onDismissRequest = { gpxStatus = null },
+                                title = { Text("GPX") },
+                                text = { Text(status) },
+                                confirmButton = {
+                                    TextButton(onClick = { gpxStatus = null }) {
+                                        Text(if (language == "ru") "Понятно" else "OK")
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    "Notifications" -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                        ) {
+                            TextButton(onClick = { currentRoute = "Settings" }) {
+                                Text(if (language == "ru") "← Настройки" else "← Settings")
+                            }
+
+                            Text(
+                                text = if (language == "ru") {
+                                    "Даты сезонов ориентировочные. Уведомления приходят, даже когда приложение закрыто."
+                                } else {
+                                    "Season dates are approximate. Reminders arrive even when the app is closed."
+                                },
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                TextButton(onClick = {
+                                    requestIosSeasonNotificationPermission { granted ->
+                                        notificationUiScope.launch {
+                                            notificationStatusText = if (granted) {
+                                                if (language == "ru") "Уведомления разрешены" else "Notifications enabled"
+                                            } else {
+                                                if (language == "ru") "Разрешение не получено. Проверь настройки iPhone." else "Permission denied. Check iPhone Settings."
+                                            }
+                                            if (granted) notificationPermissionRevision++
+                                        }
+                                    }
+                                }) {
+                                    Text(if (language == "ru") "Разрешить уведомления" else "Enable alerts")
+                                }
+                                TextButton(onClick = {
+                                    scheduleIosSeasonNotificationTest(language) { success ->
+                                        notificationUiScope.launch {
+                                            notificationStatusText = if (success) {
+                                                if (language == "ru") "Тест назначен через 15 с. Сверни приложение." else "Test in 15 s. Background the app."
+                                            } else {
+                                                if (language == "ru") "Не удалось назначить тест. Проверь разрешение." else "Unable to schedule test. Check permission."
+                                            }
+                                        }
+                                    }
+                                }) {
+                                    Text(if (language == "ru") "Тест 15 с" else "Test 15 s")
+                                }
+                            }
+                            notificationStatusText?.let { status ->
+                                Text(
+                                    text = status,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+
+                            SharedNotificationScreen(
+                                state = SharedNotificationSettingsState(
+                                    notifyStart = notificationPreferences.notifyStart,
+                                    notifyPeak = notificationPreferences.notifyPeak,
+                                    notifyEnd = notificationPreferences.notifyEnd,
+                                    enabledSpecies = allFloraSpecies
+                                        .filter { species -> species.isNotifEnabled == 1 }
+                                        .map { species ->
+                                            SharedNotificationSpecies(
+                                                id = species.id,
+                                                displayName = species.localizedName(language),
+                                                imageName = species.imageName,
+                                                startMonth = species.startMonth,
+                                                endMonth = species.endMonth
+                                            )
+                                        }
+                                ),
+                                onNotifyStartChange = { enabled ->
+                                    val updated = notificationPreferences.copy(notifyStart = enabled)
+                                    notificationPreferences = updated
+                                    saveIosNotificationPreferences(updated)
+                                },
+                                onNotifyPeakChange = { enabled ->
+                                    val updated = notificationPreferences.copy(notifyPeak = enabled)
+                                    notificationPreferences = updated
+                                    saveIosNotificationPreferences(updated)
+                                },
+                                onNotifyEndChange = { enabled ->
+                                    val updated = notificationPreferences.copy(notifyEnd = enabled)
+                                    notificationPreferences = updated
+                                    saveIosNotificationPreferences(updated)
+                                },
+                                onSpeciesNotificationChange = { speciesId, enabled ->
+                                    changeFloraNotification(speciesId, enabled)
+                                },
+                                speciesImageContent = { imageName, imageModifier ->
+                                    SharedSpeciesImage(
+                                        imageName = imageName,
+                                        modifier = imageModifier
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    "OfflineRegions" -> {
+                        var offlineRevision by remember { mutableIntStateOf(0) }
+                        val regions = remember(offlineRevision) {
+                            offlineMapsBridge.listRegions()
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                TextButton(onClick = { currentRoute = "Settings" }) {
+                                    Text(if (language == "ru") "← Настройки" else "← Settings")
+                                }
+                                TextButton(onClick = { offlineRevision++ }) {
+                                    Text(if (language == "ru") "Обновить" else "Refresh")
+                                }
+                            }
+                            SharedOfflineRegionsScreen(
+                                state = SharedOfflineRegionsState(regions),
+                                onNavigateToDownload = { currentRoute = "OfflineImport" },
+                                onDeleteRegion = { id ->
+                                    if (offlineMapsBridge.deleteRegion(id)) {
+                                        offlineRevision++
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                actionLabel = if (language == "ru") {
+                                    "Добавить MBTiles"
+                                } else {
+                                    "Add MBTiles"
+                                }
+                            )
+                        }
+                    }
+
+                    "OfflineImport" -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                                .padding(innerPadding).padding(20.dp)
+                        ) {
+                            TextButton(onClick = { currentRoute = "OfflineRegions" }) {
+                                Text(if (language == "ru") "← Офлайн-карты" else "← Offline maps")
+                            }
+                            Spacer(Modifier.height(20.dp))
+                            Text(
+                                if (language == "ru") "Добавить офлайн-карту (.mbtiles)"
+                                else "Add offline map (.mbtiles)",
+                                style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            Text(
+                                if (language == "ru") {
+                                    "1. Получите растровый MBTiles-пакет (PNG/JPEG) из источника, разрешающего офлайн-использование.\n\n" +
+                                    "2. Откройте iPhone → «Файлы» → «На iPhone» → «ForestPoint» → «OfflineMaps».\n\n" +
+                                    "3. Скопируйте туда файл .mbtiles.\n\n" +
+                                    "4. Вернитесь сюда и нажмите «Показать карты».\n\n" +
+                                    "Внутри пакета карта работает без интернета. " +
+                                    "Google Maps остаётся онлайн."
+                                } else {
+                                    "1. Obtain a raster PNG/JPEG MBTiles pack from a source that permits offline use.\n\n" +
+                                    "2. Open Files → On My iPhone → ForestPoint → OfflineMaps.\n\n" +
+                                    "3. Copy the .mbtiles file into that folder.\n\n" +
+                                    "4. Return here and tap Show maps.\n\n" +
+                                    "The map works without internet inside the pack's coverage. " +
+                                    "Google Maps remains online."
+                                }
+                            )
+                            Spacer(Modifier.height(24.dp))
+                            Button(onClick = { currentRoute = "OfflineRegions" }) {
+                                Text(if (language == "ru") "Показать карты" else "Show maps")
+                            }
+                        }
+                    }
+
                     "Forecast" -> {
                         SharedForecastScreen(
                             state = forecastState,
@@ -1294,6 +1631,7 @@ fun MainViewController(
                         }
                     }
                 }
+            }
             }
         }
     }

@@ -12,7 +12,9 @@ struct ComposeView: UIViewControllerRepresentable {
             socialGateway: IosSocialForecastService(),
             mapBridge: IosOsmMapView(),
             googleMapBridge: IosGoogleMapView(),
-            googleMapsEnabled: ForestPointGoogleMapsSetup.enabled
+            googleMapsEnabled: ForestPointGoogleMapsSetup.enabled,
+            gpxTransport: IosGpxTransfer.shared,
+            offlineMapsBridge: IosOfflineMapsManager.shared
         )
     }
 

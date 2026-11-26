@@ -42,7 +42,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		84D6C6B330A6043400C18DED /* Exceptions for "ForestPointIOS" folder in "ForestPointIOS" target */ = {
+		84D6C6B330A6043400C18DED /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -55,18 +55,30 @@
 		84D6C67A30A5ECF600C18DED /* ForestPointIOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				84D6C6B330A6043400C18DED /* Exceptions for "ForestPointIOS" folder in "ForestPointIOS" target */,
+				84D6C6B330A6043400C18DED /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = ForestPointIOS;
 			sourceTree = "<group>";
 		};
 		84D6C68830A5ECF900C18DED /* ForestPointIOSTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = ForestPointIOSTests;
 			sourceTree = "<group>";
 		};
 		84D6C69230A5ECF900C18DED /* ForestPointIOSUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = ForestPointIOSUITests;
 			sourceTree = "<group>";
 		};

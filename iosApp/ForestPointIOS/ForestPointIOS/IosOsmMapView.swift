@@ -16,6 +16,12 @@ private final class ForestPointOSMTileOverlay: MKTileOverlay {
 
     ) {
 
+        
+        // Load licensed offline raster MBTiles data before trying the network.
+        if let offlineTile = IosOfflineMapsManager.shared.tile(for: path) {
+            result(offlineTile, nil)
+            return
+        }
         let url = url(forTilePath: path)
 
         var request = URLRequest(url: url)
