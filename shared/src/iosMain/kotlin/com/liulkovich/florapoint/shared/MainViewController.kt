@@ -108,6 +108,7 @@ import com.liulkovich.florapoint.shared.ui.map.SharedMapLayerMenu
 import com.liulkovich.florapoint.shared.domain.SharedMapSettings
 import com.liulkovich.florapoint.shared.domain.SharedOfflineRegionsState
 import com.liulkovich.florapoint.shared.ui.settings.SharedOfflineRegionsScreen
+import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -119,7 +120,9 @@ fun MainViewController(
     googleMapBridge: IosGoogleMapBridge,
     googleMapsEnabled: Boolean,
     gpxTransport: IosGpxTransport,
-    offlineMapsBridge: IosOfflineMapsBridge
+    offlineMapsBridge: IosOfflineMapsBridge,
+    offlineMapBridge: IosOfflineMapBridge,
+    aboutActions: IosAboutActionsBridge
 ): UIViewController =
     ComposeUIViewController {
 
@@ -410,7 +413,11 @@ fun MainViewController(
                 bottomBar = {
                     if (currentRoute != "Detail") {
                         ForestPointBottomBar(
-                            currentRoute = if (currentRoute == "Notifications") "Settings" else currentRoute,
+                            // Stage 18: Offline Maps belongs to Settings in the bottom bar.
+                            currentRoute = when (currentRoute) {
+                                "Notifications", "OfflineRegions", "OfflineImport", "OfflineDownload" -> "Settings"
+                                else -> currentRoute
+                            },
                             onNavigate = { route ->
                                 currentRoute = route
                             },
@@ -705,15 +712,60 @@ fun MainViewController(
                     "Map" -> {
                         val mapScope = rememberCoroutineScope()
 
-                        val activeMapBridge: IosMapBridge =
-                            if (
-                                googleMapsEnabled &&
-                                mapSettings.provider == SharedMapProvider.GOOGLE
-                            ) {
-                                googleMapBridge
-                            } else {
-                                mapBridge
+                        // STAGE16_MAIN_MAPBOX: same map controls and points for all providers.
+                        val savedOfflineMaps = remember {
+                            offlineMapsBridge.listRegions().filter { it.id.startsWith("mapbox:") }
+                        }
+                        var offlineSelectedManually by remember { mutableStateOf(false) }
+                        var onlineOverride by remember { mutableStateOf(false) }
+                        var noNetwork by remember { mutableStateOf(false) }
+                        var showOfflineChoice by remember { mutableStateOf(false) }
+
+                        LaunchedEffect(Unit) {
+                            while (true) {
+                                noNetwork = offlineMapsBridge.isNetworkUnavailable()
+                                if (!noNetwork) onlineOverride = false
+                                delay(1800L)
                             }
+                        }
+                        val isUsingOffline = savedOfflineMaps.isNotEmpty() &&
+                            (offlineSelectedManually || (noNetwork && !onlineOverride))
+
+                        LaunchedEffect(isUsingOffline, offlineSelectedManually) {
+                            if (isUsingOffline && !offlineSelectedManually) {
+                                offlineMapBridge.selectRegion("auto")
+                            }
+                        }
+                        if (showOfflineChoice) {
+                            AlertDialog(
+                                onDismissRequest = { showOfflineChoice = false },
+                                title = { Text(if (language == "ru") "Выберите офлайн-карту" else "Select offline map") },
+                                text = {
+                                    Column {
+                                        savedOfflineMaps.forEach { region ->
+                                            TextButton(onClick = {
+                                                if (offlineMapBridge.selectRegion(region.id)) {
+                                                    offlineSelectedManually = true
+                                                    onlineOverride = false
+                                                }
+                                                showOfflineChoice = false
+                                            }) { Text(region.name) }
+                                        }
+                                    }
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = { showOfflineChoice = false }) {
+                                        Text(if (language == "ru") "Закрыть" else "Close")
+                                    }
+                                }
+                            )
+                        }
+
+                        val activeMapBridge: IosMapBridge = when {
+                            isUsingOffline -> offlineMapBridge
+                            googleMapsEnabled && mapSettings.provider == SharedMapProvider.GOOGLE -> googleMapBridge
+                            else -> mapBridge
+                        }
 
                         var mapWeather by remember {
                             mutableStateOf<SharedWeatherData?>(null)
@@ -867,7 +919,7 @@ fun MainViewController(
 
                                 Box(modifier = panelModifier) {
 
-                                    key(mapSettings.provider) {
+                                    key(mapSettings.provider, isUsingOffline) {
                                         IosOsmMapContent(
                                             mapBridge = activeMapBridge,
                                             modifier = Modifier
@@ -892,6 +944,8 @@ fun MainViewController(
                                     SharedMapLayerMenu(
                                         settings = mapSettings,
                                         onProviderSelected = { provider ->
+                                            offlineSelectedManually = false
+                                            onlineOverride = true
                                             mapSettings = mapSettings.copy(
                                                 provider = provider
                                             )
@@ -902,12 +956,17 @@ fun MainViewController(
                                             }
                                         },
                                         onGoogleLayerSelected = { layer ->
+                                            offlineSelectedManually = false
+                                            onlineOverride = true
                                             mapSettings = mapSettings.copy(
                                                 googleLayer = layer
                                             )
                                             googleMapBridge.setGoogleLayer(layer.name)
                                         },
                                         showGoogleProvider = googleMapsEnabled,
+                                        showOfflineProvider = savedOfflineMaps.isNotEmpty(),
+                                        isOfflineSelected = isUsingOffline,
+                                        onOfflineProviderSelected = { showOfflineChoice = true },
 
                                         modifier = Modifier
                                             .align(Alignment.TopEnd)
@@ -977,8 +1036,10 @@ fun MainViewController(
 
 
                                     if (
-                                        mapSettings.provider == SharedMapProvider.OSM ||
-                                        !googleMapsEnabled
+                                        !isUsingOffline && (
+                                            mapSettings.provider == SharedMapProvider.OSM ||
+                                            !googleMapsEnabled
+                                        )
                                     ) {
                                         Text(
                                             text = stringResource(
@@ -1368,15 +1429,13 @@ fun MainViewController(
                                 })
                             },
                             onOfflineMaps = { currentRoute = "OfflineRegions" },
-                            onPrivacy = { unfinishedAction = "Конфиденциальность" },
+                            onPrivacy = { aboutActions.openPrivacyPolicy() },
                             onLanguageSelected = { selected ->
                                 setIosSettingsLanguage(selected)
                                 settingsLanguage = selected
                             },
-                            onContactDeveloper = {
-                                unfinishedAction = "Связь с разработчиком"
-                            },
-                            onRateApp = { unfinishedAction = "Оценить приложение" },
+                            onContactDeveloper = { aboutActions.contactDeveloper() },
+                            onRateApp = { aboutActions.rateApp() },
                             modifier = Modifier.padding(innerPadding)
                         )
 
@@ -1517,6 +1576,12 @@ fun MainViewController(
 
                     "OfflineRegions" -> {
                         var offlineRevision by remember { mutableIntStateOf(0) }
+                        LaunchedEffect(Unit) {
+                            while (true) {
+                                delay(1800L)
+                                offlineRevision++
+                            }
+                        }
                         val regions = remember(offlineRevision) {
                             offlineMapsBridge.listRegions()
                         }
@@ -1528,13 +1593,10 @@ fun MainViewController(
                                 TextButton(onClick = { currentRoute = "Settings" }) {
                                     Text(if (language == "ru") "← Настройки" else "← Settings")
                                 }
-                                TextButton(onClick = { offlineRevision++ }) {
-                                    Text(if (language == "ru") "Обновить" else "Refresh")
-                                }
                             }
                             SharedOfflineRegionsScreen(
                                 state = SharedOfflineRegionsState(regions),
-                                onNavigateToDownload = { currentRoute = "OfflineImport" },
+                                onNavigateToDownload = { offlineMapsBridge.selectAndDownloadRegion() },
                                 onDeleteRegion = { id ->
                                     if (offlineMapsBridge.deleteRegion(id)) {
                                         offlineRevision++
@@ -1542,9 +1604,9 @@ fun MainViewController(
                                 },
                                 modifier = Modifier.weight(1f),
                                 actionLabel = if (language == "ru") {
-                                    "Добавить MBTiles"
+                                    "Скачать область"
                                 } else {
-                                    "Add MBTiles"
+                                    "Download area"
                                 }
                             )
                         }
@@ -1563,6 +1625,20 @@ fun MainViewController(
                                 if (language == "ru") "Добавить офлайн-карту (.mbtiles)"
                                 else "Add offline map (.mbtiles)",
                                 style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            Button(onClick = { offlineMapsBridge.pickRegion() }) {
+                                Text(
+                                    if (language == "ru") "Выбрать файл .mbtiles"
+                                    else "Choose .mbtiles file"
+                                )
+                            }
+                            Spacer(Modifier.height(12.dp))
+                            Text(
+                                if (language == "ru")
+                                    "Выберите растровую карту в приложении «Файлы». После импорта откройте список карт. Или добавьте файл вручную:"
+                                else
+                                    "Choose a raster map from Files. After import, return to the offline maps list. Or add the file manually:"
                             )
                             Spacer(Modifier.height(16.dp))
                             Text(

@@ -40,7 +40,10 @@ fun SharedMapLayerMenu(
     onGoogleLayerSelected: (SharedGoogleMapLayer) -> Unit,
     modifier: Modifier = Modifier,
     showGoogleProvider: Boolean = true,
-    isLandscape: Boolean = false
+    isLandscape: Boolean = false,
+    showOfflineProvider: Boolean = false,
+    isOfflineSelected: Boolean = false,
+    onOfflineProviderSelected: () -> Unit = {}
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -100,7 +103,7 @@ fun SharedMapLayerMenu(
 
                     Text(
                         text = if (
-                            settings.provider == SharedMapProvider.OSM
+                            settings.provider == SharedMapProvider.OSM && !isOfflineSelected
                         ) {
                             stringResource(
                                 Res.string.map_layer_selected,
@@ -116,6 +119,15 @@ fun SharedMapLayerMenu(
                     expanded = false
                 }
             )
+            if (showOfflineProvider) {
+                DropdownMenuItem(
+                    text = { Text(if (isOfflineSelected) "✓ Mapbox · офлайн" else "Mapbox · офлайн") },
+                    onClick = {
+                        onOfflineProviderSelected()
+                        expanded = false
+                    }
+                )
+            }
             if (showGoogleProvider) {
             DropdownMenuItem(
                 text = {
@@ -125,7 +137,7 @@ fun SharedMapLayerMenu(
 
                     Text(
                         text = if (
-                            settings.provider == SharedMapProvider.GOOGLE
+                            settings.provider == SharedMapProvider.GOOGLE && !isOfflineSelected
                         ) {
                             stringResource(
                                 Res.string.map_layer_selected,
@@ -145,7 +157,7 @@ fun SharedMapLayerMenu(
 
             if (
                 showGoogleProvider &&
-                settings.provider == SharedMapProvider.GOOGLE
+                settings.provider == SharedMapProvider.GOOGLE && !isOfflineSelected
             ) {
                 HorizontalDivider()
 

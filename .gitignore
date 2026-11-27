@@ -14,3 +14,5 @@
 app/florapoint
 /app/google-services.json
 /iosApp/ForestPointIOS/ForestPointIOS/LocalGoogleMaps.plist
+/iosApp/ForestPointIOS/ForestPointIOS/LocalOfflineTileSource.plist
+/iosApp/ForestPointIOS/ForestPointIOS/LocalMapboxToken.plist

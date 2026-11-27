@@ -14,7 +14,9 @@ struct ComposeView: UIViewControllerRepresentable {
             googleMapBridge: IosGoogleMapView(),
             googleMapsEnabled: ForestPointGoogleMapsSetup.enabled,
             gpxTransport: IosGpxTransfer.shared,
-            offlineMapsBridge: IosOfflineMapsManager.shared
+            offlineMapsBridge: IosOfflineMapsManager.shared,
+            offlineMapBridge: IosMapboxMapBridge.shared,
+            aboutActions: IosAboutActions.shared
         )
     }
 

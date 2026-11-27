@@ -11,6 +11,7 @@
 		84460C3930ACD99600B1F1C3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84460C3830ACD99600B1F1C3 /* FirebaseCore */; };
 		84460C3B30ACD9AD00B1F1C3 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */; };
 		845476A130B06A41002506F3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 845476A030B06A41002506F3 /* FirebaseAuth */; };
+		84654AEC30B9805300F0EA1C /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 84654AEB30B9805300F0EA1C /* MapboxMaps */; };
 		846ECB5730B747470010BB38 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 846ECB5630B747470010BB38 /* GoogleMaps */; };
 		84AD8EB330AB20A300D1238A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84AD8EB230AB20A200D1238A /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
@@ -89,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84654AEC30B9805300F0EA1C /* MapboxMaps in Frameworks */,
 				84460C3B30ACD9AD00B1F1C3 /* FirebaseFunctions in Frameworks */,
 				84460C3930ACD99600B1F1C3 /* FirebaseCore in Frameworks */,
 				846ECB5730B747470010BB38 /* GoogleMaps in Frameworks */,
@@ -169,6 +171,7 @@
 				84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */,
 				845476A030B06A41002506F3 /* FirebaseAuth */,
 				846ECB5630B747470010BB38 /* GoogleMaps */,
+				84654AEB30B9805300F0EA1C /* MapboxMaps */,
 			);
 			productName = ForestPointIOS;
 			productReference = 84D6C67830A5ECF600C18DED /* ForestPointIOS.app */;
@@ -256,6 +259,7 @@
 			packageReferences = (
 				84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				846ECAA130B710720010BB38 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				84654AEA30B97FAC00F0EA1C /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 84D6C67930A5ECF600C18DED /* Products */;
@@ -660,6 +664,14 @@
 				version = 12.11.0;
 			};
 		};
+		84654AEA30B97FAC00F0EA1C /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 11.25.0;
+			};
+		};
 		846ECAA130B710720010BB38 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
@@ -685,6 +697,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		84654AEB30B9805300F0EA1C /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84654AEA30B97FAC00F0EA1C /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
 		};
 		846ECB5630B747470010BB38 /* GoogleMaps */ = {
 			isa = XCSwiftPackageProductDependency;

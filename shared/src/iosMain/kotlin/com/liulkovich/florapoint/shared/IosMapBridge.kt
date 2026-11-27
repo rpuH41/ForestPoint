@@ -32,6 +32,11 @@ interface IosMapBridge {
     )
 }
 
+// Only Mapbox offline mode implements this extension, not OSM/Google.
+interface IosOfflineMapBridge : IosMapBridge {
+    fun selectRegion(rowId: String): Boolean
+}
+
 interface IosGoogleMapBridge : IosMapBridge {
     fun setGoogleLayer(layerKey: String)
 }
