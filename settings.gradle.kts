@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "FloraPoint"
 include(":app")
- 
+include(":shared")

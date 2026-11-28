@@ -1,0 +1,714 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		84460BFE30AC901400B1F1C3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84460BFC30AC901300B1F1C3 /* InfoPlist.strings */; };
+		84460C3930ACD99600B1F1C3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84460C3830ACD99600B1F1C3 /* FirebaseCore */; };
+		84460C3B30ACD9AD00B1F1C3 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */; };
+		845476A130B06A41002506F3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 845476A030B06A41002506F3 /* FirebaseAuth */; };
+		84654AEC30B9805300F0EA1C /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 84654AEB30B9805300F0EA1C /* MapboxMaps */; };
+		846ECB5730B747470010BB38 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 846ECB5630B747470010BB38 /* GoogleMaps */; };
+		84AD8EB330AB20A300D1238A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 84AD8EB230AB20A200D1238A /* libsqlite3.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		84D6C68630A5ECF900C18DED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 84D6C67030A5ECF600C18DED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 84D6C67730A5ECF600C18DED;
+			remoteInfo = ForestPointIOS;
+		};
+		84D6C69030A5ECF900C18DED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 84D6C67030A5ECF600C18DED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 84D6C67730A5ECF600C18DED;
+			remoteInfo = ForestPointIOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		84460BFD30AC901300B1F1C3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		84460BFF30AC916E00B1F1C3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		84AD8EB230AB20A200D1238A /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		84D6C67830A5ECF600C18DED /* ForestPointIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForestPointIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		84D6C68530A5ECF900C18DED /* ForestPointIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForestPointIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		84D6C68F30A5ECF900C18DED /* ForestPointIOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForestPointIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		84D6C6B330A6043400C18DED /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 84D6C67730A5ECF600C18DED /* ForestPointIOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		84D6C67A30A5ECF600C18DED /* ForestPointIOS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				84D6C6B330A6043400C18DED /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = ForestPointIOS;
+			sourceTree = "<group>";
+		};
+		84D6C68830A5ECF900C18DED /* ForestPointIOSTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = ForestPointIOSTests;
+			sourceTree = "<group>";
+		};
+		84D6C69230A5ECF900C18DED /* ForestPointIOSUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = ForestPointIOSUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		84D6C67530A5ECF600C18DED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84654AEC30B9805300F0EA1C /* MapboxMaps in Frameworks */,
+				84460C3B30ACD9AD00B1F1C3 /* FirebaseFunctions in Frameworks */,
+				84460C3930ACD99600B1F1C3 /* FirebaseCore in Frameworks */,
+				846ECB5730B747470010BB38 /* GoogleMaps in Frameworks */,
+				84AD8EB330AB20A300D1238A /* libsqlite3.tbd in Frameworks */,
+				845476A130B06A41002506F3 /* FirebaseAuth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84D6C68230A5ECF900C18DED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84D6C68C30A5ECF900C18DED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		84AD8EB130AB20A100D1238A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				84AD8EB230AB20A200D1238A /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		84D6C66F30A5ECF500C18DED = {
+			isa = PBXGroup;
+			children = (
+				84460BFC30AC901300B1F1C3 /* InfoPlist.strings */,
+				84D6C67A30A5ECF600C18DED /* ForestPointIOS */,
+				84D6C68830A5ECF900C18DED /* ForestPointIOSTests */,
+				84D6C69230A5ECF900C18DED /* ForestPointIOSUITests */,
+				84AD8EB130AB20A100D1238A /* Frameworks */,
+				84D6C67930A5ECF600C18DED /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		84D6C67930A5ECF600C18DED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				84D6C67830A5ECF600C18DED /* ForestPointIOS.app */,
+				84D6C68530A5ECF900C18DED /* ForestPointIOSTests.xctest */,
+				84D6C68F30A5ECF900C18DED /* ForestPointIOSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		84D6C67730A5ECF600C18DED /* ForestPointIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84D6C69930A5ECF900C18DED /* Build configuration list for PBXNativeTarget "ForestPointIOS" */;
+			buildPhases = (
+				84D6C6A230A5F16A00C18DED /* ShellScript */,
+				84D6C67430A5ECF600C18DED /* Sources */,
+				84D6C67530A5ECF600C18DED /* Frameworks */,
+				84D6C67630A5ECF600C18DED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				84D6C67A30A5ECF600C18DED /* ForestPointIOS */,
+			);
+			name = ForestPointIOS;
+			packageProductDependencies = (
+				84460C3830ACD99600B1F1C3 /* FirebaseCore */,
+				84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */,
+				845476A030B06A41002506F3 /* FirebaseAuth */,
+				846ECB5630B747470010BB38 /* GoogleMaps */,
+				84654AEB30B9805300F0EA1C /* MapboxMaps */,
+			);
+			productName = ForestPointIOS;
+			productReference = 84D6C67830A5ECF600C18DED /* ForestPointIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		84D6C68430A5ECF900C18DED /* ForestPointIOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84D6C69C30A5ECF900C18DED /* Build configuration list for PBXNativeTarget "ForestPointIOSTests" */;
+			buildPhases = (
+				84D6C68130A5ECF900C18DED /* Sources */,
+				84D6C68230A5ECF900C18DED /* Frameworks */,
+				84D6C68330A5ECF900C18DED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				84D6C68730A5ECF900C18DED /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				84D6C68830A5ECF900C18DED /* ForestPointIOSTests */,
+			);
+			name = ForestPointIOSTests;
+			packageProductDependencies = (
+			);
+			productName = ForestPointIOSTests;
+			productReference = 84D6C68530A5ECF900C18DED /* ForestPointIOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		84D6C68E30A5ECF900C18DED /* ForestPointIOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84D6C69F30A5ECF900C18DED /* Build configuration list for PBXNativeTarget "ForestPointIOSUITests" */;
+			buildPhases = (
+				84D6C68B30A5ECF900C18DED /* Sources */,
+				84D6C68C30A5ECF900C18DED /* Frameworks */,
+				84D6C68D30A5ECF900C18DED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				84D6C69130A5ECF900C18DED /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				84D6C69230A5ECF900C18DED /* ForestPointIOSUITests */,
+			);
+			name = ForestPointIOSUITests;
+			packageProductDependencies = (
+			);
+			productName = ForestPointIOSUITests;
+			productReference = 84D6C68F30A5ECF900C18DED /* ForestPointIOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		84D6C67030A5ECF600C18DED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					84D6C67730A5ECF600C18DED = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					84D6C68430A5ECF900C18DED = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 84D6C67730A5ECF600C18DED;
+					};
+					84D6C68E30A5ECF900C18DED = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 84D6C67730A5ECF600C18DED;
+					};
+				};
+			};
+			buildConfigurationList = 84D6C67330A5ECF600C18DED /* Build configuration list for PBXProject "ForestPointIOS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				ru,
+			);
+			mainGroup = 84D6C66F30A5ECF500C18DED;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				846ECAA130B710720010BB38 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				84654AEA30B97FAC00F0EA1C /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 84D6C67930A5ECF600C18DED /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				84D6C67730A5ECF600C18DED /* ForestPointIOS */,
+				84D6C68430A5ECF900C18DED /* ForestPointIOSTests */,
+				84D6C68E30A5ECF900C18DED /* ForestPointIOSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		84D6C67630A5ECF600C18DED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84460BFE30AC901400B1F1C3 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84D6C68330A5ECF900C18DED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84D6C68D30A5ECF900C18DED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		84D6C6A230A5F16A00C18DED /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nif [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n    echo \"Skipping Kotlin framework build\"\n    exit 0\nfi\n\nexport JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\"\nexport PATH=\"$JAVA_HOME/bin:$PATH\"\n\ncd \"$SRCROOT/../..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		84D6C67430A5ECF600C18DED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84D6C68130A5ECF900C18DED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84D6C68B30A5ECF900C18DED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		84D6C68730A5ECF900C18DED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 84D6C67730A5ECF600C18DED /* ForestPointIOS */;
+			targetProxy = 84D6C68630A5ECF900C18DED /* PBXContainerItemProxy */;
+		};
+		84D6C69130A5ECF900C18DED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 84D6C67730A5ECF600C18DED /* ForestPointIOS */;
+			targetProxy = 84D6C69030A5ECF900C18DED /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		84460BFC30AC901300B1F1C3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84460BFD30AC901300B1F1C3 /* en */,
+				84460BFF30AC916E00B1F1C3 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		84D6C69730A5ECF900C18DED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		84D6C69830A5ECF900C18DED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		84D6C69A30A5ECF900C18DED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ForestPointIOS/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liulkovich.florapoint.ForestPointIOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		84D6C69B30A5ECF900C18DED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ForestPointIOS/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liulkovich.florapoint.ForestPointIOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		84D6C69D30A5ECF900C18DED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liulkovich.florapoint.ForestPointIOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ForestPointIOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ForestPointIOS";
+			};
+			name = Debug;
+		};
+		84D6C69E30A5ECF900C18DED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liulkovich.florapoint.ForestPointIOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ForestPointIOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ForestPointIOS";
+			};
+			name = Release;
+		};
+		84D6C6A030A5ECF900C18DED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liulkovich.florapoint.ForestPointIOSUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ForestPointIOS;
+			};
+			name = Debug;
+		};
+		84D6C6A130A5ECF900C18DED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.liulkovich.florapoint.ForestPointIOSUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ForestPointIOS;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		84D6C67330A5ECF600C18DED /* Build configuration list for PBXProject "ForestPointIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84D6C69730A5ECF900C18DED /* Debug */,
+				84D6C69830A5ECF900C18DED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		84D6C69930A5ECF900C18DED /* Build configuration list for PBXNativeTarget "ForestPointIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84D6C69A30A5ECF900C18DED /* Debug */,
+				84D6C69B30A5ECF900C18DED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		84D6C69C30A5ECF900C18DED /* Build configuration list for PBXNativeTarget "ForestPointIOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84D6C69D30A5ECF900C18DED /* Debug */,
+				84D6C69E30A5ECF900C18DED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		84D6C69F30A5ECF900C18DED /* Build configuration list for PBXNativeTarget "ForestPointIOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84D6C6A030A5ECF900C18DED /* Debug */,
+				84D6C6A130A5ECF900C18DED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 12.11.0;
+			};
+		};
+		84654AEA30B97FAC00F0EA1C /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 11.25.0;
+			};
+		};
+		846ECAA130B710720010BB38 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		84460C3830ACD99600B1F1C3 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		84460C3A30ACD9AD00B1F1C3 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		845476A030B06A41002506F3 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84460C3730ACC9A200B1F1C3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		84654AEB30B9805300F0EA1C /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84654AEA30B97FAC00F0EA1C /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
+		};
+		846ECB5630B747470010BB38 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 846ECAA130B710720010BB38 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 84D6C67030A5ECF600C18DED /* Project object */;
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- DO NOT use tile.openstreetmap.org or Google Maps tiles here. -->
+    <!-- This must be an HTTPS raster XYZ source with explicit offline rights. -->
+    <key>TileURLTemplate</key>
+    <string>https://YOUR-LICENSED-SERVER.example/tiles/{z}/{x}/{y}.png</string>
+    <!-- Must be set true only if your provider explicitly permits offline packs. -->
+    <key>OfflineCachingPermitted</key>
+    <true/>
+    <key>Attribution</key>
+    <string>© OpenStreetMap contributors · Your tile provider</string>
+</dict>
+</plist>

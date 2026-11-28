@@ -219,4 +219,14 @@
     <string name="map_point_avg_temperature">🌡️ Ø %1$s°</string>
     <string name="map_point_avg_humidity">💧 Ø %1$s%%</string>
 
+    <string name="dangerous_mushroom">Опасный гриб</string>
+    <string name="safety_notice_title">Внимание!</string>
+    <string name="safety_notice_text">Отсутствие значка «Опасный гриб» не гарантирует безопасность гриба. Не определяйте съедобность грибов по приложению.</string>
+    <string name="forest_filter_title">Где растут грибы?</string>
+    <string name="forest_all">Все</string>
+    <string name="forest_coniferous">🌲 Хвойный</string>
+    <string name="forest_deciduous">🌳 Лиственный</string>
+    <string name="forest_mixed">🌲🌳 Смешанный</string>
+
+
 </resources>

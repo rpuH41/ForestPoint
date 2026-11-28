@@ -53,7 +53,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.size
-
+import androidx.lifecycle.compose.LifecycleStartEffect
 @Composable
 fun GoogleMapView(
     modifier: Modifier = Modifier,
@@ -98,34 +98,66 @@ fun GoogleMapView(
         mutableStateOf<Pair<Double, Double>?>(null)
     }
 
-    DisposableEffect(context, hasLocationPermission) {
+
+    LifecycleStartEffect(context, hasLocationPermission) {
+
         val locationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            context.getSystemService(
+                Context.LOCATION_SERVICE
+            ) as LocationManager
 
         val listener = LocationListener { location ->
-            val coordinates = location.latitude to location.longitude
+            val coordinates =
+                location.latitude to location.longitude
 
             liveGpsLocation = coordinates
             latestOnLocationUpdate(coordinates)
         }
 
         if (hasLocationPermission) {
-            try {
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    1000L,
-                    0f,
-                    listener
-                )
-            } catch (_: SecurityException) {
-            } catch (_: IllegalArgumentException) {
+            val hasFineLocation =
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+            val hasCoarseLocation =
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+            val provider = when {
+                hasFineLocation ->
+                    LocationManager.GPS_PROVIDER
+
+                hasCoarseLocation ->
+                    LocationManager.NETWORK_PROVIDER
+
+                else -> null
+            }
+
+            if (provider != null) {
+                try {
+                    if (locationManager.isProviderEnabled(provider)) {
+                        locationManager.requestLocationUpdates(
+                            provider,
+                            3000L,
+                            5f,
+                            listener
+                        )
+                    }
+                } catch (_: SecurityException) {
+                } catch (_: IllegalArgumentException) {
+                }
             }
         }
 
-        onDispose {
+        onStopOrDispose {
             locationManager.removeUpdates(listener)
         }
     }
+
 
     var hasCenteredOnLocation by remember {
         mutableStateOf(false)

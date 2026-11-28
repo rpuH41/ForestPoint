@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
     id("com.google.gms.google-services")
 }
 
@@ -24,7 +24,7 @@ android {
         applicationId = "com.liulkovich.florapoint"
         minSdk = 24
         targetSdk = 36
-        versionCode = 30
+        versionCode = 32
         versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["MAPS_API_KEY"] =
@@ -32,7 +32,9 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file(localProperties.getProperty("STORE_FILE", ""))
+            storeFile = localProperties.getProperty("STORE_FILE", "")
+                .takeIf { it.isNotBlank() }
+                ?.let { file(it) }
             storePassword = localProperties.getProperty("STORE_PASSWORD", "")
             keyAlias = localProperties.getProperty("KEY_ALIAS", "")
             keyPassword = localProperties.getProperty("KEY_PASSWORD", "")
@@ -61,10 +63,10 @@ android {
         buildConfig = true
     }
 
-
 }
 
 dependencies {
+    implementation(project(":shared"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

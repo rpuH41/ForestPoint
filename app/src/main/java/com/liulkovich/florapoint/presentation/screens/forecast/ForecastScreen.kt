@@ -42,6 +42,7 @@ import com.liulkovich.florapoint.domain.localizedName
 import com.liulkovich.florapoint.presentation.screens.map.CurrentWeather
 import com.liulkovich.florapoint.domain.LocationUtils
 import androidx.compose.material.icons.filled.Warning
+import com.liulkovich.florapoint.presentation.screens.map.utils.isOnline
 
 @Composable
 fun ForecastScreen(
@@ -53,10 +54,33 @@ fun ForecastScreen(
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToMapWithPoint: (Int?) -> Unit
 ) {
+
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(currentWeather) {
-        viewModel.load(currentWeather, isWeatherLoading, currentLat, currentLon)
+    val online by isOnline()
+
+    LaunchedEffect(
+        currentWeather,
+        isWeatherLoading,
+        currentLat,
+        currentLon,
+        online
+    ) {
+        if (online && currentWeather != null) {
+            viewModel.load(
+                weather = currentWeather,
+                isWeatherLoading = isWeatherLoading,
+                currentLat = currentLat,
+                currentLon = currentLon
+            )
+        } else if (currentWeather == null) {
+            viewModel.load(
+                weather = null,
+                isWeatherLoading = isWeatherLoading,
+                currentLat = currentLat,
+                currentLon = currentLon
+            )
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
